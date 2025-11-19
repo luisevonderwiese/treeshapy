@@ -1,4 +1,5 @@
 import math
+import sys
 
 import treeshapy.depth_indices as depth_indices
 import treeshapy.width_indices as width_indices
@@ -13,6 +14,7 @@ import treeshapy.ranking_indices as ranking_indices
 import treeshapy.branchlength_indices as branchlength_indices
 import treeshapy.util as util
 
+sys.set_int_max_str_digits(2147483647) 
 
 INDICES =[
           "average_leaf_depth",
@@ -41,9 +43,11 @@ INDICES =[
           "four_caterpillars",
           "double_cherries",
           "ladder_length",
+          "average_ladder",
           "diameter",
           "area_per_pair_index",
           "wiener_index",
+          "maximum_closeness",
           "minimum_farness",
           "maximum_farness",
           "total_farness",
@@ -57,6 +61,7 @@ INDICES =[
 
           "rogers_j_index",
           "symmetry_nodes_index",
+          "j1",
 
           "stairs1",
           "stairs2",
@@ -126,7 +131,7 @@ class TreeShape:
         for index_name in INDICES:
             try:
                 res[index_name] = self.relative(index_name)
-            except ValueError:
+            except ValueError as e:
                 res[index_name] = float("nan")
         return res
 
@@ -178,6 +183,8 @@ class TreeShape:
                 return structure_indices.RootedQuartetIndex()
             case "ladder_length":
                 return structure_indices.LadderLength()
+            case "average_ladder":
+                return structure_indices.AverageLadder()
             case "IL_number":
                 return structure_indices.ILNumber()
             case "cherry_index":
@@ -198,6 +205,8 @@ class TreeShape:
                 return distance_indices.AreaPerPairIndex()
             case "wiener_index":
                 return network_indices.WienerIndex()
+            case "maximum_closeness":
+                return network_indices.MaximumCloseness()
             case "minimum_farness":
                 return network_indices.MinimumFarness()
             case "maximum_farness":
@@ -234,6 +243,8 @@ class TreeShape:
                 return node_indices.RogersJIndex()
             case "symmetry_nodes_index":
                 return node_indices.SymmetryNodesIndex()
+            case "j1":
+                return node_indices.J1()
             case "mean_I":
                 return Ibased_indices.MeanI()
             case "total_I":

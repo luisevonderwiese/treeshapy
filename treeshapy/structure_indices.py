@@ -84,24 +84,44 @@ class LadderLength(TreeIndex):
         if mode == "ARBITRARY":
             raise ValueError("ladder_length is not defined for arbitrary trees")
         try:
-            return tree.ladder_length
+            return tree.max_ladder_length
         except AttributeError:
-            for node in tree.traverse("postorder"):
-                if node.is_leaf():
-                    node.add_feature("ladder_length", -1)
-                    continue
-                c = node.children
-                if c[0].is_leaf():
-                    node.add_feature("ladder_length", c[1].ladder_length + 1)
-                elif c[1].is_leaf():
-                    node.add_feature("ladder_length", c[0].ladder_length + 1)
-                else: #not part of a ladder
-                    node.add_feature("ladder_length", 0)
-            max_ladder = 0
-            for node in tree.traverse("postorder"):
-                max_ladder = max(max_ladder, node.ladder_length)
-            tree.add_feature("ladder_length", max_ladder)
-            return tree.ladder_length
+            try:
+                tree.max_ladder_length
+            except AttributeError:
+                util.precompute_ladder_lengths(tree)
+            tree.add_feature("max_ladder_length", max([node.ladder_length for node in tree.traverse()]))
+            return tree.max_ladder_length
+
+    def maximum(self, n, m, mode):
+        return float("nan")
+
+    def minimum(self, n, m, mode):
+        return float("nan")
+
+    def imbalance(self):
+        return 0
+
+class AverageLadder(TreeIndex):
+    def evaluate(self, tree, mode):
+        if mode == "ARBITRARY":
+            raise ValueError("average_ladder is not defined for arbitrary trees")
+        try:
+            return tree.average_ladder
+        except AttributeError:
+            if tree.is_leaf():
+                tree.add_feature("average_ladder", 0)
+                return tree.average_ladder
+            try:
+                tree.ladder_length
+            except AttributeError:
+                util.precompute_ladder_lengths(tree)
+            l = [node.ladder_length for node in tree.traverse() if node.ladder_length > 0]
+            if len(l) == 0:
+                tree.add_feature("average_ladder", 0)
+            else:
+                tree.add_feature("average_ladder", sum(l) / len(l))
+            return tree.average_ladder
 
     def maximum(self, n, m, mode):
         return float("nan")

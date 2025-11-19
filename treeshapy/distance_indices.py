@@ -74,6 +74,14 @@ class Diameter(TreeIndex):
 
 
 class AreaPerPairIndex(TreeIndex):
+    def evaluate_only(self, tree, mode):
+        n = util.clade_size(tree, tree)
+        if n == 1:
+            return 0
+        s = SackinIndex().evaluate_only(tree, mode)
+        c = TotalCopheneticIndex().evaluate_only(tree, mode)
+        return (2 / n) * s - (4 / (n * (n - 1))) * c
+
     def evaluate(self, tree, mode):
         try:
             return tree.area_per_pair_index

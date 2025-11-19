@@ -294,3 +294,35 @@ class SymmetryNodesIndex(TreeIndex):
     def imbalance(self):
         return 1
 
+class J1(TreeIndex):
+    def evaluate(self, tree, mode):
+        try:
+            return tree.j_one
+        except AttributeError:
+            if tree.is_leaf():
+                tree.add_feature("j_one", 0)
+                return tree.j_one
+            try:
+                tree.nodes_below
+            except AttributeError:
+                util.precompute_nodes_below(tree)
+            f1 = 1 / sum([util.clade_size(tree, node) for node in tree.traverse() if not node.is_leaf()])
+            f2 = 0
+            for node in tree.traverse():
+                if node.is_leaf():
+                    continue
+                c = node.children
+                s = util.clade_size(tree, node)
+                f2 += sum([-util.clade_size(tree, child) * math.log(util.clade_size(tree, child) / s, len(c)) for child in c])
+            tree.add_feature("j_one", f1 * f2)
+            return tree.j_one
+
+    def maximum(self, n, m, mode):
+        return float("nan")
+
+    def minimum(self, n, m, mode):
+        return float("nan")
+
+    def imbalance(self):
+        return 0
+

@@ -3,21 +3,43 @@ import numpy as np
 import treeshapy.util as util
 from treeshapy.tree_index import TreeIndex
 from treeshapy.depth_indices import SackinIndex
-from treeshapy.distance_indices import TotalCopheneticIndex
+from treeshapy.distance_indices import AreaPerPairIndex 
 
 class WienerIndex(TreeIndex):
     def evaluate(self, tree, mode):
         try:
             return tree.wiener_index
         except AttributeError:
-            n = util.clade_size(tree, tree)
-            if n == 1:
-                tree.add_feature("wiener_index", 0)
-            else:
-                s = SackinIndex().evaluate_only(tree, mode)
-                c = TotalCopheneticIndex().evaluate_only(tree, mode)
-                tree.add_feature("wiener_index", (n - 1) * s - 2 * c)
+            try:
+                tree.nodes_below
+            except AttributeError:
+                util.precompute_nodes_below(tree)
+            util.wiener_index_recursive(tree)
             return tree.wiener_index
+
+    def maximum(self, n, m, mode):
+        return float("nan")
+
+    def minimum(self, n, m, mode):
+        return float("nan")
+
+    def imbalance(self):
+        return 0
+
+class MaximumCloseness(TreeIndex):
+    def evaluate(self, tree, mode):
+        try:
+            return tree.maximum_closeness
+        except AttributeError:
+            if tree.is_leaf():
+                tree.add_feature("maximum_closeness", float("nan"))
+                return tree.maximum_closeness
+            try:
+                tree.farness
+            except AttributeError:
+                util.precompute_farness(tree)
+            tree.add_feature("maximum_closeness", max([1 / node.farness for node in tree.traverse()]))
+            return tree.maximum_closeness
 
     def maximum(self, n, m, mode):
         return float("nan")

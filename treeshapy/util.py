@@ -123,12 +123,27 @@ def precompute_ladder_lengths(tree):
             continue
         c = node.children
         assert len(c)==2 #only defined for bifurcating trees
-        if c[0].is_leaf():
+        if c[0].is_leaf() and not c[1].is_leaf():
             node.add_feature("ladder_length", c[1].ladder_length + 1)
-        elif c[1].is_leaf():
+        elif c[1].is_leaf() and not c[0].is_leaf():
             node.add_feature("ladder_length", c[0].ladder_length + 1)
         else: #not part of a ladder
             node.add_feature("ladder_length", 0)
+    for node in tree.traverse("preorder"):
+        if node.ladder_length == 1:
+            node.ladder_length = 0 #ladders of length 1 do not count
+        if node.ladder_length > 0:
+            c = node.children
+            if c[0].is_leaf():
+                assert not c[1].is_leaf()
+                if c[1].ladder_length > 0:
+                    c[1].ladder_length = node.ladder_length
+                    node.ladder_length = 0
+            else:
+                assert c[1].is_leaf()
+                if c[0].ladder_length > 0:
+                    c[0].ladder_length = node.ladder_length
+                    node.ladder_length = 0
 
 def is_pitchfork(tree, node):
     return clade_size(tree, node) == 3 and len(node.children) == 2
@@ -202,7 +217,7 @@ def furnas_ranks(tree):
             continue
         c = node.children
         assert (len(c) == 2)
-        if clade_size(tree, c[0]) <= clade_size(tree, c[1]):
+        if clade_size(tree, c[0]) < clade_size(tree, c[1]) or (clade_size(tree, c[0]) == clade_size(tree, c[1]) and c[0].furnas_rank < c[1].furnas_rank):
             f_l = c[0].furnas_rank
             alpha = clade_size(tree, c[0])
             f_r = c[1].furnas_rank
@@ -226,8 +241,8 @@ def furnas_ranks(tree):
             node.add_feature("furnas_rank", float("nan"))
             continue
         if alpha == beta:
-            s -= (f_l * f_l - f_l) / 2
-        node.add_feature("furnas_rank", s)
+            s -= (f_l * f_l - f_l) // 2
+        node.add_feature("furnas_rank", int(s))
 
 
 def isomorphic(v1, v2):
@@ -343,10 +358,34 @@ def colijn_plazotta_recursive(node):
     assert len(c) == 2
     colijn_plazotta_recursive(c[0])
     colijn_plazotta_recursive(c[1])
-    if c[0].colijn_plazotta_rank >= c[1].colijn_plazotta_rank:
-        node.add_feature("colijn_plazotta_rank", 0.5 * c[0].colijn_plazotta_rank * (c[0].colijn_plazotta_rank - 1) + c[1].colijn_plazotta_rank + 1)
+    r_0 = c[0].colijn_plazotta_rank
+    r_1 = c[1].colijn_plazotta_rank
+    if r_0 >= r_1:
+        node.add_feature("colijn_plazotta_rank", (r_0 * (r_0 - 1)) / 2 + r_1 + 1)
     else:
-        node.add_feature("colijn_plazotta_rank", 0.5 * c[1].colijn_plazotta_rank * (c[1].colijn_plazotta_rank - 1) + c[0].colijn_plazotta_rank + 1)
+        node.add_feature("colijn_plazotta_rank", (r_1 * (r_1 - 1)) / 2 + r_0 + 1)
+
+
+def wiener_index_recursive(node):
+    if node.is_leaf():
+        node.add_feature("S_1", 0)
+        node.add_feature("wiener_index", 0)
+        return
+    c = node.children
+    n = node.nodes_below
+    S_1 = 0
+    S_2 = 0
+    S_3 = 0
+    for child in c:
+        wiener_index_recursive(child)
+        n_i = child.nodes_below
+        S_1 += child.S_1 + n_i
+        S_2 += child.wiener_index
+        S_3 += child.S_1 * (n - 1 - n_i) - (n_i * n_i)
+    S_3 += (n - 1) * (n - 1)
+    node.add_feature("S_1", S_1)
+    node.add_feature("wiener_index", S_1 + S_2 + S_3)
+
 
 
 def is_bifurcating(tree):
