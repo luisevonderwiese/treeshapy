@@ -23,6 +23,9 @@ class WienerIndex(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 0
 
@@ -47,6 +50,9 @@ class MaximumCloseness(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 0
 
@@ -68,6 +74,9 @@ class MinimumFarness(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 0
 
@@ -88,7 +97,10 @@ class MaximumFarness(TreeIndex):
 
     def minimum(self, n, m, mode):
         return float("nan")
-
+    
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 0
 
@@ -110,6 +122,9 @@ class TotalFarness(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 0
 
@@ -134,6 +149,9 @@ class MinimumBCent(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 0
 
@@ -156,6 +174,9 @@ class MaximumBCent(TreeIndex):
         return float("nan")
 
     def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
         return float("nan")
 
     def imbalance(self):
@@ -183,6 +204,9 @@ class MeanBCent(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 0
 
@@ -208,6 +232,9 @@ class BCentVariance(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")    
+
     def imbalance(self):
         return 0
 
@@ -226,6 +253,9 @@ class BCentRoot(TreeIndex):
         return float("nan")
 
     def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
         return float("nan")
 
     def imbalance(self):

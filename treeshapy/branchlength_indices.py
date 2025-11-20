@@ -29,6 +29,9 @@ class Treeness(TreeIndex):
     def minimum(self, n, m, mode):
         return 0
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 0
 
@@ -63,6 +66,9 @@ class Stemminess(TreeIndex):
 
     def minimum(self, n, m, mode):
         return 0
+
+    def exp_yule(self, n):
+        return float("nan")
 
     def imbalance(self):
         return 0

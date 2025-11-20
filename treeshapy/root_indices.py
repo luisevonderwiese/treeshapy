@@ -32,6 +32,9 @@ class RootImbalance(TreeIndex):
         if mode == "ARBITRARY":
             return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 0
 
@@ -62,6 +65,9 @@ class IRoot(TreeIndex):
             return 0
         if mode == "ARBITRARY":
             return float("nan")
+
+    def exp_yule(self, n):
+        return float("nan")
 
     def imbalance(self):
         return 0

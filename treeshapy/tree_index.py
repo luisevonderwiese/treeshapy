@@ -7,6 +7,9 @@ class TreeIndex:
 
     def minimum(self, n, m, mode):
         raise NotImplementedError
+    
+    def exp_yule(self, n):
+        raise NotImplementedError
 
     def imbalance(self):
         raise NotImplementedError

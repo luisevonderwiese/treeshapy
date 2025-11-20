@@ -21,6 +21,9 @@ class MeanI(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 1
 
@@ -44,6 +47,9 @@ class TotalI(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1
 
@@ -68,6 +74,9 @@ class MeanIPrime(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1
 
@@ -91,6 +100,9 @@ class TotalIPrime(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1
 
@@ -115,7 +127,10 @@ class MeanIW(TreeIndex):
 
     def minimum(self, n, m, mode):
         return float("nan")
-
+    
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1
 
@@ -140,5 +155,8 @@ class TotalIW(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1

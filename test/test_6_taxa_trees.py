@@ -390,11 +390,13 @@ class TestMetrics(unittest.TestCase):
             tb = TreeShape(tree, "BINARY")
             for index_name in INDICES:
                 print(index_name)
-                try:
-                    tb.relative(index_name)
-                except ValueError as e:
-                    #print(e)
-                    continue
+                #try:
+                tb.relative(index_name, "MAX")
+                tb.relative(index_name, "YULE")
+                tb.relative(index_name, "TIPS")
+                #except ValueError as e:
+                #    #print(e)
+                #    continue
 
     def test_relative_arbitrary(self):
         test_trees = {}
@@ -405,7 +407,8 @@ class TestMetrics(unittest.TestCase):
             for index_name in INDICES:
                 print(index_name)
                 try:
-                    tb.relative(index_name)
+                    tb.relative(index_name, "MAX")
+                    tb.relative(index_name, "TIPS")
                 except ValueError as e:
                     #print(e)
                     continue

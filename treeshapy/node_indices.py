@@ -42,6 +42,9 @@ class CollessIndex(TreeIndex):
         if mode == "ARBITRARY":
             return float("nan")
 
+    def exp_yule(self, n):
+        return (n % 2) + n * (util.H(math.floor(n / 2)) - 1)
+
     def imbalance(self):
         return 1
 
@@ -76,6 +79,10 @@ class CorrectedCollessIndex(TreeIndex):
         if mode == "ARBITRARY":
             return float("nan")
 
+    def exp_yule(self, n):
+        e_colless = (n % 2) + n * (util.H(math.floor(n / 2)) - 1)
+        return (2 * e_colless) / ((n - 1) * (n - 2))
+    
     def imbalance(self):
         return 1
 
@@ -112,7 +119,10 @@ class QuadraticCollessIndex(TreeIndex):
             return s
         if mode == "ARBITRARY":
             return float("nan")
-
+    
+    def exp_yule(self, n):
+        return n * (n + 1) - 2 * n * util.H(n)
+    
     def imbalance(self):
         return 1
 
@@ -148,6 +158,9 @@ class I2Index(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 1
 
@@ -181,6 +194,9 @@ class Stairs1(TreeIndex):
         if mode == "ARBITRARY":
             return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         raise 1
 
@@ -213,6 +229,9 @@ class Stairs2(TreeIndex):
     def minimum(self, n, m, mode):
         return float('nan')
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return -1
 
@@ -225,8 +244,6 @@ class RogersJIndex(TreeIndex):
                 if util.balance_index(tree, node) != 0:
                     s += 1
         return s 
-
-
 
     def evaluate(self, tree, mode):
         if mode == "ARBITRARY":
@@ -255,7 +272,10 @@ class RogersJIndex(TreeIndex):
             return bin(n).count("1") - 1
         if mode == "ARBITRARY":
             return float("nan")
-
+    
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1
 
@@ -291,6 +311,9 @@ class SymmetryNodesIndex(TreeIndex):
         if mode == "ARBITRARY":
             return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 1
 
@@ -321,6 +344,9 @@ class J1(TreeIndex):
         return float("nan")
 
     def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
         return float("nan")
 
     def imbalance(self):

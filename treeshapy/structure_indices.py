@@ -22,6 +22,9 @@ class RootedQuartetIndex(TreeIndex):
     def minimum(self, n, m, mode):
         return 0
 
+    def exp_yule(self, n):
+        return math.comb(n, 4) 
+
     def imbalance(self):
         return -1
 
@@ -47,6 +50,9 @@ class SShape(TreeIndex):
             if n == 1:
                 return 0
             return math.log2(n - 1)
+
+    def exp_yule(self, n):
+        return float("nan")
 
     def imbalance(self):
         return 1
@@ -76,6 +82,9 @@ class DIndex(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 0
 
@@ -97,6 +106,9 @@ class LadderLength(TreeIndex):
         return float("nan")
 
     def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
         return float("nan")
 
     def imbalance(self):
@@ -129,6 +141,9 @@ class AverageLadder(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 0
 
@@ -148,6 +163,9 @@ class ILNumber(TreeIndex):
         return float("nan")
 
     def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
         return float("nan")
 
     def imbalance(self):

@@ -16,10 +16,19 @@ for index_name in INDICES:
     except ValueError as e:
         print(e)
     try:
-        print(tb_b.relative(index_name))
+        print(tb_b.relative(index_name, "MAX"))
     except ValueError as e:
         print(e)
     try:
-        print(tb_a.relative(index_name))
+        print(tb_a.relative(index_name, "MAX"))
     except ValueError as e:
         print(e)
+    try:
+        print(tb_b.relative(index_name, "TIPS"))
+    except ValueError as e:
+        print(e)
+    try:
+        print(tb_a.relative(index_name, "TIPS"))
+    except ValueError as e:
+        print(e)
+

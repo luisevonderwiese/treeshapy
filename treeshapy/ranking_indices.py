@@ -17,6 +17,9 @@ class ColijnPlazottaRank(TreeIndex):
     def minimum(self, n, m, mode):
         return float('nan')
 
+    def exp_yule(self, n):
+        return float("nan")
+
     def imbalance(self):
         return 1
 
@@ -43,5 +46,8 @@ class FurnasRank(TreeIndex):
         if mode == "ARBITRARY":
             return float("nan")
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return -1

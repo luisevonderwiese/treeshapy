@@ -21,6 +21,9 @@ class AverageLeafDepth(TreeIndex):
         x = math.floor(math.log2(n / k))
         return  x + 3 - (k / n) * math.pow(2, x + 1)
 
+    def exp_yule(self, n):
+        return 2 * util.H(n) - 2
+    
     def imbalance(self):
         return 1
 
@@ -42,6 +45,9 @@ class VarianceOfLeavesDepths(TreeIndex):
         if mode == "ARBITRARY":
             return 0
 
+    def exp_yule(self, n):
+        return ((2 * (n + 1)) / n) * util.H(n) + (1 / n) - 5
+    
     def imbalance(self):
         return 1
 
@@ -64,7 +70,10 @@ class SackinIndex(TreeIndex):
         k = n - m + 1
         x = math.floor(math.log2(n / k))
         return (x + 3) * n - k * math.pow(2, x + 1)
-
+    
+    def exp_yule(self, n):
+        return 2 * n * (util.H(n) - 1)
+    
     def imbalance(self):
         return 1
 
@@ -88,7 +97,10 @@ class TotalPathLength(TreeIndex):
             return 2 * log_val * n - math.pow(2, log_val + 2) + 2 * n + 2
         if mode == "ARBITRARY":
             return n
-
+    
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1
 
@@ -114,7 +126,10 @@ class TotalInternalPathLength(TreeIndex):
             return log_val * n - math.pow(2, log_val + 1) + 2
         if mode == "ARBITRARY":
             return 0
-
+    
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1
 
@@ -140,6 +155,9 @@ class AverageVertexDepth(TreeIndex):
         if mode == "ARBITRARY":
             return n / (n + 1)
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1
 
@@ -165,7 +183,10 @@ class MaximumDepth(TreeIndex):
             return math.ceil(math.log2(n))
         if mode == "ARBITRARY":
             return 1
-
+    
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return 1
 
@@ -193,6 +214,9 @@ class B1Index(TreeIndex):
     def minimum(self, n, m, mode):
         return float('nan')
 
+    def exp_yule(self, n):
+        return float("nan")
+    
     def imbalance(self):
         return -1
 
@@ -223,6 +247,9 @@ class B2Index(TreeIndex):
 
     def minimum(self, n, m, mode):
         return 2 - math.pow(2, 2 - n)
+
+    def exp_yule(self, n):
+        return util.H(n - 1)
 
     def imbalance(self):
         return -1

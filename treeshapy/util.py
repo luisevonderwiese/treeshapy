@@ -6,6 +6,9 @@ from collections import Counter
 
 we_dict = None
 
+def H(n):
+    return sum([1.0 / i for i in range(1, n+1)])
+
 def leaf_depths(tree):
     return [depth(tree, leaf) for leaf in tree.iter_leaves()]
 

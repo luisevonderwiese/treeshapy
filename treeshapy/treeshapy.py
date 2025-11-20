@@ -106,19 +106,30 @@ class TreeShape:
     def absolute(self, index_name):
         return self.index(index_name).evaluate(self.tree, self.mode)
 
-    def relative(self, index_name):
+    def relative(self, index_name, rel):
         v = self.absolute(index_name)
-        min_v = self.index(index_name).minimum(self.n, self.m, self.mode)
-        max_v = self.index(index_name).maximum(self.n, self.m, self.mode)
-        if math.isnan(min_v) or math.isnan(max_v):
-            raise ValueError(index_name + " cannot be normalized for " + self.mode.lower() + " trees")
-        if min_v == max_v:
-            raise ValueError("Minimum equals maximum for " + index_name +  " for " + self.mode.lower() + " trees")
-        if max_v - v < -0.00001:
-            raise ArithmeticError("Value above maximum for " + index_name)
-        if v - min_v < -0.00001:
-            raise ArithmeticError("Value below minimum for " + index_name)
-        return (v - min_v) / (max_v - min_v)
+        if rel == "MAX":
+            min_v = self.index(index_name).minimum(self.n, self.m, self.mode)
+            max_v = self.index(index_name).maximum(self.n, self.m, self.mode)
+            if math.isnan(min_v) or math.isnan(max_v):
+                return float("nan")
+                #raise ValueError(index_name + " cannot be normalized for " + self.mode.lower() + " trees")
+            if min_v == max_v:
+                raise ValueError("Minimum equals maximum for " + index_name +  " for " + self.mode.lower() + " trees")
+            if max_v - v < -0.00001:
+                raise ArithmeticError("Value above maximum for " + index_name)
+            if v - min_v < -0.00001:
+                raise ArithmeticError("Value below minimum for " + index_name)
+            return (v - min_v) / (max_v - min_v)
+        if rel == "YULE":
+            e = self.index(index_name).exp_yule(self.n)
+            if math.isnan(e):
+                return float("nan")
+            return (v - e) / self.n
+        if rel == "TIPS":
+            return v / self.n
+        raise ValueError(rel + " is not a normalization mode")
+
 
     def all_absolute(self):
         res = {}
@@ -126,25 +137,30 @@ class TreeShape:
             res[index_name] = self.absolute(index_name)
         return res
 
-    def all_relative(self):
+    def all_relative(self, rel):
+        if rel == "YULE":
+            if not self.mode == "BINARY":
+                raise ValueError("YULE normalization only makes sense for binary trees")
+            if self.n == 1:
+                raise ValueError("YULE normalization not supported for single-node-trees")
         res = {}
         for index_name in INDICES:
             try:
-                res[index_name] = self.relative(index_name)
+                res[index_name] = self.relative(index_name, rel)
             except ValueError as e:
                 res[index_name] = float("nan")
         return res
 
 
-    def relative_normalized(self, index_name):
-        rel = self.relative(index_name)
-        factor = self.index(index_name).imbalance()
-        if factor == 0:
-            raise ValueError(index_name + " cannot be normalized as it is no (im)balance index")
-        rel = self.relative(index_name)
-        if factor == -1: # index is a balance index
-            return 1 - rel
-        return rel # index is an imbalance index
+#    def relative_normalized(self, index_name):
+#        rel = self.relative(index_name)
+#        factor = self.index(index_name).imbalance()
+#        if factor == 0:
+#            raise ValueError(index_name + " cannot be normalized as it is no (im)balance index")
+#        rel = self.relative(index_name)
+#        if factor == -1: # index is a balance index
+#            return 1 - rel
+#        return rel # index is an imbalance index
 
 
     def index_instance(self, index_name):
