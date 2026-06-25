@@ -166,7 +166,7 @@ class TreeShape:
             res[index_name] = v
         return res
 
-    def all_relative(self, rel, normalize = False):
+    def all_relative(self, rel):
         if rel == "YULE":
             if not self.mode == "BINARY":
                 raise ValueError("YULE normalization only makes sense for binary trees")
@@ -179,23 +179,10 @@ class TreeShape:
         res = {}
         for index_name in index_list:
             try:
-                if normalize:
-                    res[index_name] = self.relative_normalized(index_name, rel)
-                else:
-                    res[index_name] = self.relative(index_name, rel)
+                res[index_name] = self.relative(index_name, rel)
             except (ValueError, ArithmeticError) as e:
                 res[index_name] = float("nan")
         return res
-
-
-    def relative_normalized(self, index_namei, rel):
-        factor = self.index(index_name).imbalance()
-        if factor == 0:
-            return 0
-        r = self.relative(index_name, rel)
-        if factor == -1: # index is a balance index
-            return 1 - r
-        return r # index is an imbalance index
 
 
     def index_instance(self, index_name):

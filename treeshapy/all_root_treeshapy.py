@@ -52,8 +52,8 @@ class AllRootTreeShape:
     def all_absolute(self):
         return {name : ts.all_absolute(index_name) for name, ts in self.ts_instances.items()}
 
-    def all_relative(self, rel, normalize = False):
-        return {name : ts.all_relative(index_name, rel, normalize) for name, ts in self.ts_instances.items()}
+    def all_relative(self, rel):
+        return {name : ts.all_relative(index_name, rel) for name, ts in self.ts_instances.items()}
 
 
 
