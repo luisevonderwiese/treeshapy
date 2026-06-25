@@ -80,17 +80,35 @@ INDICES =[
           "stemminess"]
 
 
+INDICES_UNROOTED = ["diameter",
+          "area_per_pair_index",
+          "wiener_index",
+          "maximum_closeness",
+          "minimum_farness",
+          "maximum_farness",
+          "total_farness",
+          "minimum_bcent",
+          "maximum_bcent",
+          "mean_bcent",
+          "bcent_variance"]
+
 class TreeShape:
-    def __init__(self, tree, mode):
+    def __init__(self, tree, mode, rooted = True):
         if mode not in ["BINARY", "ARBITRARY"]:
             raise ValueError(f"Unknown mode: {mode}")
-        if mode == "BINARY" and not util.is_bifurcating(tree):
+        if mode == "BINARY" and not util.is_bifurcating(tree, rooted):
             raise ValueError("BINARY mode only possible for strictly bifurcating trees")
         self.mode = mode
+        self.rooted = rooted
+        if not rooted:
+            tree = util.remove_implicit_root(tree)
         self.tree = tree
         self.n = len(tree)
         if mode == "BINARY":
-            self.m = self.n - 1
+            if rooted:
+                self.m = self.n - 1
+            else:
+                self.m = self.n - 2
         else:
             self.m = len([node for node in tree.traverse()]) - self.n
         self.indices = {}
@@ -104,6 +122,8 @@ class TreeShape:
         return self.indices[index_name]
 
     def absolute(self, index_name):
+        if not self.rooted and index_name not in INDICES_UNROOTED:
+            raise ValueError(index_name + "not defined for unrooted trees")
         return self.index(index_name).evaluate(self.tree, self.mode)
 
     def relative(self, index_name, rel):
@@ -111,7 +131,7 @@ class TreeShape:
         if rel == "MAX":
             min_v = self.index(index_name).minimum(self.n, self.m, self.mode)
             max_v = self.index(index_name).maximum(self.n, self.m, self.mode)
-            if math.isnan(min_v) or math.isnan(max_v):
+            if (not isinstance(min_v, int) and math.isnan(min_v)) or (not isinstance(max_v, int) and math.isnan(max_v)):
                 return float("nan")
                 #raise ValueError(index_name + " cannot be normalized for " + self.mode.lower() + " trees")
             if min_v == max_v:
@@ -132,35 +152,50 @@ class TreeShape:
 
 
     def all_absolute(self):
+        if self.rooted:
+            index_list = INDICES
+        else:
+            index_list = INDICES_UNROOTED
         res = {}
-        for index_name in INDICES:
-            res[index_name] = self.absolute(index_name)
+        for index_name in index_list:
+            try:
+                v = self.absolute(index_name)
+            except ValueError:
+                res[index_name] = float("nan")
+                continue
+            res[index_name] = v
         return res
 
-    def all_relative(self, rel):
+    def all_relative(self, rel, normalize = False):
         if rel == "YULE":
             if not self.mode == "BINARY":
                 raise ValueError("YULE normalization only makes sense for binary trees")
             if self.n == 1:
                 raise ValueError("YULE normalization not supported for single-node-trees")
+        if self.rooted:
+            index_list = INDICES
+        else:
+            index_list = INDICES_UNROOTED
         res = {}
-        for index_name in INDICES:
+        for index_name in index_list:
             try:
-                res[index_name] = self.relative(index_name, rel)
-            except ValueError as e:
+                if normalize:
+                    res[index_name] = self.relative_normalized(index_name, rel)
+                else:
+                    res[index_name] = self.relative(index_name, rel)
+            except (ValueError, ArithmeticError) as e:
                 res[index_name] = float("nan")
         return res
 
 
-#    def relative_normalized(self, index_name):
-#        rel = self.relative(index_name)
-#        factor = self.index(index_name).imbalance()
-#        if factor == 0:
-#            raise ValueError(index_name + " cannot be normalized as it is no (im)balance index")
-#        rel = self.relative(index_name)
-#        if factor == -1: # index is a balance index
-#            return 1 - rel
-#        return rel # index is an imbalance index
+    def relative_normalized(self, index_namei, rel):
+        factor = self.index(index_name).imbalance()
+        if factor == 0:
+            return 0
+        r = self.relative(index_name, rel)
+        if factor == -1: # index is a balance index
+            return 1 - r
+        return r # index is an imbalance index
 
 
     def index_instance(self, index_name):

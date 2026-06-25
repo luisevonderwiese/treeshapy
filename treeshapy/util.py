@@ -67,8 +67,8 @@ def find_distant_node(tree):
     for node in tree.iter_descendants():
         if node.name == "dummy":
             continue
-        if node.depth > max_depth:
-            max_depth = node.depth
+        if depth(tree, node) > max_depth:
+            max_depth = depth(tree, node)
             distant_node = node.name
     return max_depth, distant_node
 
@@ -391,11 +391,21 @@ def wiener_index_recursive(node):
 
 
 
-def is_bifurcating(tree):
+def is_bifurcating(tree, rooted = True):
     try: #check if heights already precomputed
         return tree.bifurcating
     except AttributeError:
-        tree.add_feature("bifurcating", bifurcating_recursive(tree))
+        if rooted:
+            tree.add_feature("bifurcating", bifurcating_recursive(tree))
+        else:
+            if not len(tree.children) in [2, 3]:
+                tree.add_feature("bifurcating", False)
+                return False
+            tree.add_feature("bifurcating", True)
+            for child in tree.children:
+                if not bifurcating_recursive(child):
+                    tree.bifurcating = False
+                    break
         return tree.bifurcating
 
 def bifurcating_recursive(tree):
@@ -405,3 +415,11 @@ def bifurcating_recursive(tree):
     if len(c) == 0:
         return True
     return False
+
+def remove_implicit_root(tree):
+    if len(tree.children) != 2:
+        return tree
+    c0 = tree.children[0]
+    c1 = tree.children[1]
+    c0.add_child(c1)
+    return c0
