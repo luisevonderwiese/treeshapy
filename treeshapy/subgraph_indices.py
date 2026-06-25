@@ -78,6 +78,32 @@ class ModifiedCherryIndex(TreeIndex):
     def imbalance(self):
         return 0
 
+
+class ILNumber(TreeIndex):
+    def evaluate(self, tree, mode):
+        try:
+            return tree.IL_number
+        except AttributeError:
+            cnt = 0
+            for node in tree.traverse("postorder"):
+                if len([c for c in node.children if c.is_leaf()]) == 1:
+                    cnt += 1
+            tree.add_feature("IL_number", cnt)
+            return tree.IL_number
+
+    def maximum(self, n, m, mode):
+        return float("nan")
+
+    def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
+        return float("nan")
+
+    def imbalance(self):
+        return 0
+
+
 class Pitchforks(TreeIndex):
     def evaluate(self, tree, mode):
         try:

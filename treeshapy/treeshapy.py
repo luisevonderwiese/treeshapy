@@ -214,7 +214,7 @@ class TreeShape:
             case "max_width_over_max_depth":
                 return width_indices.MaxWidthOverMaxDepth()
             case "s_shape":
-                return structure_indices.SShape()
+                return node_indices.SShape()
             case "d_index":
                 return structure_indices.DIndex()
             case "rooted_quartet_index":
@@ -224,7 +224,7 @@ class TreeShape:
             case "average_ladder":
                 return structure_indices.AverageLadder()
             case "IL_number":
-                return structure_indices.ILNumber()
+                return subgraph_indices.ILNumber()
             case "cherry_index":
                 return subgraph_indices.CherryIndex()
             case "modified_cherry_index":
