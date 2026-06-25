@@ -325,10 +325,6 @@ class J1(TreeIndex):
             if tree.is_leaf():
                 tree.add_feature("j_one", 0)
                 return tree.j_one
-            try:
-                tree.nodes_below
-            except AttributeError:
-                util.precompute_nodes_below(tree)
             f1 = 1 / sum([util.clade_size(tree, node) for node in tree.traverse() if not node.is_leaf()])
             f2 = 0
             for node in tree.traverse():

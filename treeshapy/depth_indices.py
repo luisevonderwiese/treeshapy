@@ -233,7 +233,11 @@ class B2Index(TreeIndex):
                 util.precompute_probs(tree)
             for leaf in tree.iter_leaves():
                 p_leaf = leaf.prob
-                s += p_leaf * math.log2(p_leaf)
+                try:
+                    s += p_leaf * math.log2(p_leaf)
+                except ValueError as e:
+                    tree.add_feature("B_2_index", float("nan"))
+                    return tree.B_2_index
             tree.add_feature("B_2_index", - s)
             return tree.B_2_index
 
