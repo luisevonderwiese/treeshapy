@@ -364,9 +364,9 @@ def colijn_plazotta_recursive(node):
     r_0 = c[0].colijn_plazotta_rank
     r_1 = c[1].colijn_plazotta_rank
     if r_0 >= r_1:
-        node.add_feature("colijn_plazotta_rank", (r_0 * (r_0 - 1)) // 2 + r_1 + 1)
+        node.add_feature("colijn_plazotta_rank", (r_0 * (r_0 - 1)) / 2 + r_1 + 1)
     else:
-        node.add_feature("colijn_plazotta_rank", (r_1 * (r_1 - 1)) // 2 + r_0 + 1)
+        node.add_feature("colijn_plazotta_rank", (r_1 * (r_1 - 1)) / 2 + r_0 + 1)
 
 
 def wiener_index_recursive(node):
