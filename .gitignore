@@ -1,4 +1,6 @@
 **/__pycache__/
 treeshapy.egg-info/
 build/
+dist/
+=*
 profile.yaml
