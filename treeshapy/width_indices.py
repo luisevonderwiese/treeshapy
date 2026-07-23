@@ -3,8 +3,8 @@ from treeshapy.tree_index import TreeIndex
 from treeshapy.depth_indices import MaximumDepth
 
 class MaximumWidth(TreeIndex):
-    def evaluate_only(self, tree, mode):
-        return max(util.widths(tree).values())
+    #def evaluate_only(self, tree, mode):
+    #    return max(util.widths(tree).values())
 
     def evaluate(self, tree, mode):
         try:
@@ -101,11 +101,11 @@ class MaxWidthOverMaxDepth(TreeIndex):
         try:
             return tree.max_width_over_max_depth
         except AttributeError:
-            h = MaximumDepth().evaluate_only(tree, mode)
+            h = MaximumDepth().evaluate(tree, mode)
             if h == 0:
                 tree.add_feature("max_width_over_max_depth", 0)
             else:
-                tree.add_feature("max_width_over_max_depth", MaximumWidth().evaluate_only(tree, mode) / h)
+                tree.add_feature("max_width_over_max_depth", MaximumWidth().evaluate(tree, mode) / h)
             return tree.max_width_over_max_depth
 
     def maximum(self, n, m, mode):

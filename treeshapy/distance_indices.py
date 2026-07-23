@@ -6,12 +6,12 @@ from treeshapy.tree_index import TreeIndex
 from treeshapy.depth_indices import SackinIndex
 
 class TotalCopheneticIndex(TreeIndex):
-    def evaluate_only(self, tree, mode):
-        s = 0
-        for node in tree.iter_descendants("postorder"):
-            if not node.is_leaf():
-                s += math.comb(util.clade_size(tree, node), 2)
-        return s
+    #def evaluate_only(self, tree, mode):
+    #    s = 0
+    #    for node in tree.iter_descendants("postorder"):
+    #        if not node.is_leaf():
+    #            s += math.comb(util.clade_size(tree, node), 2)
+    #    return s
 
     def evaluate(self, tree, mode):
         try:
@@ -80,12 +80,12 @@ class Diameter(TreeIndex):
 
 
 class AreaPerPairIndex(TreeIndex):
-    def evaluate_only(self, tree, mode):
+    def evaluate(self, tree, mode):
         n = util.clade_size(tree, tree)
         if n == 1:
             return 0
-        s = SackinIndex().evaluate_only(tree, mode)
-        c = TotalCopheneticIndex().evaluate_only(tree, mode)
+        s = SackinIndex().evaluate(tree, mode)
+        c = TotalCopheneticIndex().evaluate(tree, mode)
         return (2 / n) * s - (4 / (n * (n - 1))) * c
 
     def evaluate(self, tree, mode):
@@ -96,8 +96,8 @@ class AreaPerPairIndex(TreeIndex):
             if n == 1:
                 tree.add_feature("area_per_pair_index", 0)
             else:
-                s = SackinIndex().evaluate_only(tree, mode)
-                c = TotalCopheneticIndex().evaluate_only(tree, mode)
+                s = SackinIndex().evaluate(tree, mode)
+                c = TotalCopheneticIndex().evaluate(tree, mode)
                 tree.add_feature("area_per_pair_index", (2 / n) * s - (4 / (n * (n - 1))) * c)
             return tree.area_per_pair_index
 
