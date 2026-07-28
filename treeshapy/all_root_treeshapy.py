@@ -55,6 +55,10 @@ class AllRootTreeShape:
     def all_relative(self, rel):
         return {name : ts.all_relative(index_name, rel) for name, ts in self.ts_instances.items()}
 
+    def subset_absolute(self, k):
+        return {name : ts.subset_absolute(index_name, k) for name, ts in self.ts_instances.items()}
 
+    def subset_relative(self, rel, k):
+        return {name : ts.subset_relative(index_name, rel, k) for name, ts in self.ts_instances.items()}
 
 

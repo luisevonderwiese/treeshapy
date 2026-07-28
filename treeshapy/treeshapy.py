@@ -13,6 +13,7 @@ import treeshapy.Ibased_indices as Ibased_indices
 import treeshapy.ranking_indices as ranking_indices
 import treeshapy.branchlength_indices as branchlength_indices
 import treeshapy.util as util
+from treeshapy.subsets import INDEX_SUBSETS
 
 sys.set_int_max_str_digits(2147483647) 
 
@@ -151,6 +152,27 @@ class TreeShape:
             index_list = INDICES
         else:
             index_list = INDICES_UNROOTED
+        return self._list_absolute(self, index_list)
+
+    def all_relative(self, rel):
+        if self.rooted:
+            index_list = INDICES
+        else:
+            index_list = INDICES_UNROOTED
+        return self._list_relative(self, rel, index_list)
+        
+    def subset_absolute(self, k):
+        if k < 2 or k > 10:
+            raise ValueError("Subset size must be in [2, 10]")
+        return self._list_absolute(self, INDEX_SUBSETS[k])
+
+    def subset_relative(self, rel, k):
+        if k < 2 or k > 10:
+            raise ValueError("Subset size must be in [2, 10]")
+        return self._list_relative(self, rel, INDEX_SUBSETS[k])
+
+
+    def _list_absolute(self, index_list):
         res = {}
         for index_name in index_list:
             try:
@@ -161,16 +183,12 @@ class TreeShape:
             res[index_name] = v
         return res
 
-    def all_relative(self, rel):
+    def _list_relative(self, rel, index_list):
         if rel == "YULE":
             if not self.mode == "BINARY":
                 raise ValueError("YULE normalization only makes sense for binary trees")
             if self.n == 1:
                 raise ValueError("YULE normalization not supported for single-node-trees")
-        if self.rooted:
-            index_list = INDICES
-        else:
-            index_list = INDICES_UNROOTED
         res = {}
         for index_name in index_list:
             try:
