@@ -236,6 +236,38 @@ class Stairs2(TreeIndex):
         return -1
 
 
+class J1(TreeIndex):
+    def evaluate(self, tree, mode):
+        try:
+            return tree.j_one
+        except AttributeError:
+            if tree.is_leaf():
+                tree.add_feature("j_one", 0)
+                return tree.j_one
+            f1 = 1 / sum([util.clade_size(tree, node) for node in tree.traverse() if not node.is_leaf()])
+            f2 = 0
+            for node in tree.traverse():
+                if node.is_leaf():
+                    continue
+                c = node.children
+                s = util.clade_size(tree, node)
+                f2 += sum([-util.clade_size(tree, child) * math.log(util.clade_size(tree, child) / s, len(c)) for child in c])
+            tree.add_feature("j_one", f1 * f2)
+            return tree.j_one
+
+    def maximum(self, n, m, mode):
+        return float("nan")
+
+    def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
+        return float("nan")
+
+    def imbalance(self):
+        return 0
+
+
 class RogersJIndex(TreeIndex):
     #def evaluate_only(self, tree, mode):
     #    s = 0
@@ -317,63 +349,4 @@ class SymmetryNodesIndex(TreeIndex):
     def imbalance(self):
         return 1
 
-class J1(TreeIndex):
-    def evaluate(self, tree, mode):
-        try:
-            return tree.j_one
-        except AttributeError:
-            if tree.is_leaf():
-                tree.add_feature("j_one", 0)
-                return tree.j_one
-            f1 = 1 / sum([util.clade_size(tree, node) for node in tree.traverse() if not node.is_leaf()])
-            f2 = 0
-            for node in tree.traverse():
-                if node.is_leaf():
-                    continue
-                c = node.children
-                s = util.clade_size(tree, node)
-                f2 += sum([-util.clade_size(tree, child) * math.log(util.clade_size(tree, child) / s, len(c)) for child in c])
-            tree.add_feature("j_one", f1 * f2)
-            return tree.j_one
-
-    def maximum(self, n, m, mode):
-        return float("nan")
-
-    def minimum(self, n, m, mode):
-        return float("nan")
-
-    def exp_yule(self, n):
-        return float("nan")
-
-    def imbalance(self):
-        return 0
-
-class SShape(TreeIndex):
-    def evaluate(self, tree, mode):
-        try:
-            return tree.s_shape
-        except AttributeError:
-            s = 0
-            for node in tree.traverse("postorder"):
-                if not node.is_leaf():
-                    s += math.log2(util.clade_size(tree, node) - 1)
-            tree.add_feature("s_shape", s)
-            return tree.s_shape
-
-    def maximum(self, n, m, mode):
-        return math.log2(math.factorial(n - 1))
-
-    def minimum(self, n, m, mode):
-        if mode == "BINARY":
-            return float("nan")
-        if mode == "ARBITRARY":
-            if n == 1:
-                return 0
-            return math.log2(n - 1)
-
-    def exp_yule(self, n):
-        return float("nan")
-
-    def imbalance(self):
-        return 1
 

@@ -5,6 +5,39 @@ import treeshapy.util as util
 from treeshapy.tree_index import TreeIndex
 
 
+class DIndex(TreeIndex):
+    def evaluate(self, tree, mode):
+        try:
+            return tree.d_index
+        except AttributeError:
+            n = util.clade_size(tree, tree)
+            if n == 1:
+                tree.add_feature("d_index", 0)
+            else:
+                f_n = Counter([util.clade_size(tree, node) for node in tree.traverse()])
+                num_inner_nodes = len([_ for _ in tree.traverse()]) - n
+                s = 0
+                for z in range(2, n):
+                    p_n = (n / (n - 1)) * (2 / (z * (z + 1)))
+                    s += z * abs(f_n[z] / num_inner_nodes - p_n)
+                s += n * abs(f_n[n] / num_inner_nodes - (1 / (n - 1)))
+                tree.add_feature("d_index", s)
+            return tree.d_index
+
+    def maximum(self, n, m, mode):
+        return float("nan")
+
+    def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
+        return float("nan")
+
+    def imbalance(self):
+        return 0
+
+
+
 class RootedQuartetIndex(TreeIndex):
     def evaluate(self, tree, mode):
         try:
@@ -28,24 +61,28 @@ class RootedQuartetIndex(TreeIndex):
     def imbalance(self):
         return -1
 
-class DIndex(TreeIndex):
+
+
+class AverageLadder(TreeIndex):
     def evaluate(self, tree, mode):
+        if mode == "ARBITRARY":
+            raise ValueError("average_ladder is not defined for arbitrary trees")
         try:
-            return tree.d_index
+            return tree.average_ladder
         except AttributeError:
-            n = util.clade_size(tree, tree)
-            if n == 1:
-                tree.add_feature("d_index", 0)
+            if tree.is_leaf():
+                tree.add_feature("average_ladder", 0)
+                return tree.average_ladder
+            try:
+                tree.ladder_length
+            except AttributeError:
+                util.precompute_ladder_lengths(tree)
+            l = [node.ladder_length for node in tree.traverse() if node.ladder_length > 0]
+            if len(l) == 0:
+                tree.add_feature("average_ladder", 0)
             else:
-                f_n = Counter([util.clade_size(tree, node) for node in tree.traverse()])
-                num_inner_nodes = len([_ for _ in tree.traverse()]) - n
-                s = 0
-                for z in range(2, n):
-                    p_n = (n / (n - 1)) * (2 / (z * (z + 1)))
-                    s += z * abs(f_n[z] / num_inner_nodes - p_n)
-                s += n * abs(f_n[n] / num_inner_nodes - (1 / (n - 1)))
-                tree.add_feature("d_index", s)
-            return tree.d_index
+                tree.add_feature("average_ladder", sum(l) / len(l))
+            return tree.average_ladder
 
     def maximum(self, n, m, mode):
         return float("nan")
@@ -85,35 +122,3 @@ class LadderLength(TreeIndex):
     def imbalance(self):
         return 0
 
-class AverageLadder(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
-            raise ValueError("average_ladder is not defined for arbitrary trees")
-        try:
-            return tree.average_ladder
-        except AttributeError:
-            if tree.is_leaf():
-                tree.add_feature("average_ladder", 0)
-                return tree.average_ladder
-            try:
-                tree.ladder_length
-            except AttributeError:
-                util.precompute_ladder_lengths(tree)
-            l = [node.ladder_length for node in tree.traverse() if node.ladder_length > 0]
-            if len(l) == 0:
-                tree.add_feature("average_ladder", 0)
-            else:
-                tree.add_feature("average_ladder", sum(l) / len(l))
-            return tree.average_ladder
-
-    def maximum(self, n, m, mode):
-        return float("nan")
-
-    def minimum(self, n, m, mode):
-        return float("nan")
-
-    def exp_yule(self, n):
-        return float("nan")
-
-    def imbalance(self):
-        return 0

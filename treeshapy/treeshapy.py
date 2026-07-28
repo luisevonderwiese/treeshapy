@@ -17,33 +17,46 @@ import treeshapy.util as util
 sys.set_int_max_str_digits(2147483647) 
 
 INDICES =[
-          "average_leaf_depth",
-          "variance_of_leaves_depths",
+          "colless_index",
+          "corrected_colless_index",
+          "quadratic_colless_index",
+          "I_2_index",
+          "stairs1",
+          "stairs2",
+          "j1",
+          "rogers_j_index",
+          "symmetry_nodes_index",
+          "mean_I",
+          "mean_I_prime",
+          "mean_I_w",
+          "total_I",
+          "total_I_prime",
+          "total_I_w",
           "sackin_index",
           "total_path_length",
           "total_internal_path_length",
           "average_vertex_depth",
-          "colless_index",
-          "corrected_colless_index",
-          "quadratic_colless_index",
+          "average_leaf_depth",
+          "variance_of_leaves_depths",
+          "maximum_depth",          
           "s_shape",
-          "d_index",
-          "total_cophenetic_index",
           "B_1_index",
           "B_2_index",
-          "maximum_depth",
           "maximum_width",
           "maxdiff_widths",
           "modified_maxdiff_widths",
           "max_width_over_max_depth",
+          "d_index",
+          "rooted_quartet_index",
+          "average_ladder",
+          "ladder_length",
           "cherry_index",
           "modified_cherry_index",
           "IL_number",
           "pitchforks",
           "four_caterpillars",
           "double_cherries",
-          "ladder_length",
-          "average_ladder",
+          "total_cophenetic_index",
           "diameter",
           "area_per_pair_index",
           "wiener_index",
@@ -54,30 +67,12 @@ INDICES =[
           "minimum_bcent",
           "maximum_bcent",
           "mean_bcent",
-          "bcent_variance",
+          "bcent_variance"
           "bcent_root",
           "root_imbalance",
           "I_root",
-
-          "rogers_j_index",
-          "symmetry_nodes_index",
-          "j1",
-
-          "stairs1",
-          "stairs2",
-          "I_2_index",
-          "mean_I",
-          "total_I",
-          "mean_I_prime",
-          "total_I_prime",
-          "mean_I_w",
-          "total_I_w",
-
-          "rooted_quartet_index",
           "colijn_plazotta_rank",
-          "furnas_rank",
-          "treeness",
-          "stemminess"]
+          "furnas_rank"]
 
 
 INDICES_UNROOTED = ["diameter",
@@ -187,10 +182,36 @@ class TreeShape:
 
     def index_instance(self, index_name):
         match index_name:
-            case "average_leaf_depth":
-                return depth_indices.AverageLeafDepth()
-            case "variance_of_leaves_depths":
-                return depth_indices.VarianceOfLeavesDepths()
+            case "colless_index":
+                return node_indices.CollessIndex()
+            case "corrected_colless_index":
+                return node_indices.CorrectedCollessIndex()
+            case "quadratic_colless_index":
+                return node_indices.QuadraticCollessIndex()
+            case "I_2_index":
+                return node_indices.I2Index()
+            case "stairs1":
+                return node_indices.Stairs1()
+            case "stairs2":
+                return node_indices.Stairs2()
+            case "j1":
+                return node_indices.J1()
+            case "rogers_j_index":
+                return node_indices.RogersJIndex()
+            case "symmetry_nodes_index":
+                return node_indices.SymmetryNodesIndex()
+            case "mean_I":
+                return Ibased_indices.MeanI()
+            case "mean_I_prime":
+                return Ibased_indices.MeanIPrime()
+            case "mean_I_w":
+                return Ibased_indices.MeanIW()
+            case "total_I":
+                return Ibased_indices.TotalI()
+            case "total_I_prime":
+                return Ibased_indices.TotalIPrime()
+            case "total_I_w":
+                return Ibased_indices.TotalIW()
             case "sackin_index":
                 return depth_indices.SackinIndex()
             case "total_path_length":
@@ -199,8 +220,16 @@ class TreeShape:
                 return depth_indices.TotalInternalPathLength()
             case "average_vertex_depth":
                 return depth_indices.AverageVertexDepth()
+            case "average_leaf_depth":
+                return depth_indices.AverageLeafDepth()
+            case "variance_of_leaves_depths":
+                return depth_indices.VarianceOfLeavesDepths()
+            case "average_vertex_depth":
+                return depth_indices.AverageVertexDepth()
             case "maximum_depth":
                 return depth_indices.MaximumDepth()
+            case "s_shape":
+                return depth_indices.SShape()
             case "B_1_index":
                 return depth_indices.B1Index()
             case "B_2_index":
@@ -213,22 +242,20 @@ class TreeShape:
                 return width_indices.ModifiedMaxdiffWidths()
             case "max_width_over_max_depth":
                 return width_indices.MaxWidthOverMaxDepth()
-            case "s_shape":
-                return node_indices.SShape()
             case "d_index":
                 return structure_indices.DIndex()
             case "rooted_quartet_index":
                 return structure_indices.RootedQuartetIndex()
-            case "ladder_length":
-                return structure_indices.LadderLength()
             case "average_ladder":
                 return structure_indices.AverageLadder()
-            case "IL_number":
-                return subgraph_indices.ILNumber()
+            case "ladder_length":
+                return structure_indices.LadderLength()
             case "cherry_index":
                 return subgraph_indices.CherryIndex()
             case "modified_cherry_index":
                 return subgraph_indices.ModifiedCherryIndex()
+            case "IL_number":
+                return subgraph_indices.ILNumber()
             case "pitchforks":
                 return subgraph_indices.Pitchforks()
             case "four_caterpillars":
@@ -265,43 +292,8 @@ class TreeShape:
                 return root_indices.RootImbalance()
             case "I_root":
                 return root_indices.IRoot()
-            case "colless_index":
-                return node_indices.CollessIndex()
-            case "corrected_colless_index":
-                return node_indices.CorrectedCollessIndex()
-            case "quadratic_colless_index":
-                return node_indices.QuadraticCollessIndex()
-            case "I_2_index":
-                return node_indices.I2Index()
-            case "stairs1":
-                return node_indices.Stairs1()
-            case "stairs2":
-                return node_indices.Stairs2()
-            case "rogers_j_index":
-                return node_indices.RogersJIndex()
-            case "symmetry_nodes_index":
-                return node_indices.SymmetryNodesIndex()
-            case "j1":
-                return node_indices.J1()
-            case "mean_I":
-                return Ibased_indices.MeanI()
-            case "total_I":
-                return Ibased_indices.TotalI()
-            case "mean_I_prime":
-                return Ibased_indices.MeanIPrime()
-            case "total_I_prime":
-                return Ibased_indices.TotalIPrime()
-            case "mean_I_w":
-                return Ibased_indices.MeanIW()
-            case "total_I_w":
-                return Ibased_indices.TotalIW()
             case "colijn_plazotta_rank":
                 return ranking_indices.ColijnPlazottaRank()
             case "furnas_rank":
                 return ranking_indices.FurnasRank()
-            case "treeness":
-                return branchlength_indices.Treeness()
-            case "stemminess":
-                return branchlength_indices.Stemminess()
-
         return None

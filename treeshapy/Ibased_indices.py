@@ -28,6 +28,62 @@ class MeanI(TreeIndex):
         return 1
 
 
+class MeanIPrime(TreeIndex):
+    def evaluate(self, tree, mode):
+        if mode == "ARBITRARY":
+            raise ValueError("mean_I_prime is not defined for arbitrary trees")
+        try:
+            return tree.mean_I_prime
+        except AttributeError:
+            if tree.is_leaf():
+                tree.add_feature("mean_I_prime", 0)
+            else:
+                values = util.I_values(tree, "I_prime")
+                tree.add_feature("mean_I_prime", sum(values) / len(values))
+            return tree.mean_I_prime
+
+    def maximum(self, n, m, mode):
+        return float("nan")
+
+    def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
+        return float("nan")
+
+    def imbalance(self):
+        return 1
+
+
+class MeanIW(TreeIndex):
+    def evaluate(self, tree, mode):
+        if mode == "ARBITRARY":
+            raise ValueError("mean_I_w is not defined for arbitrary trees")
+        try:
+            return tree.mean_I_w
+        except AttributeError:
+            if tree.is_leaf():
+                tree.add_feature("mean_I_w", 0)
+            else:
+                sw = util.I_weight_sum(tree)
+                values = util.I_values(tree, "I_w", sw)
+                tree.add_feature("mean_I_w", sum(values) / len(values))
+            return tree.mean_I_w
+
+    def maximum(self, n, m, mode):
+        return float("nan")
+
+    def minimum(self, n, m, mode):
+        return float("nan")
+
+    def exp_yule(self, n):
+        return float("nan")
+
+    def imbalance(self):
+        return 1
+
+
+
 class TotalI(TreeIndex):
     def evaluate(self, tree, mode):
         if mode == "ARBITRARY":
@@ -54,32 +110,6 @@ class TotalI(TreeIndex):
         return 1
 
 
-class MeanIPrime(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
-            raise ValueError("mean_I_prime is not defined for arbitrary trees")
-        try:
-            return tree.mean_I_prime
-        except AttributeError:
-            if tree.is_leaf():
-                tree.add_feature("mean_I_prime", 0)
-            else:
-                values = util.I_values(tree, "I_prime")
-                tree.add_feature("mean_I_prime", sum(values) / len(values))
-            return tree.mean_I_prime
-
-    def maximum(self, n, m, mode):
-        return float("nan")
-
-    def minimum(self, n, m, mode):
-        return float("nan")
-
-    def exp_yule(self, n):
-        return float("nan")
-    
-    def imbalance(self):
-        return 1
-
 
 class TotalIPrime(TreeIndex):
     def evaluate(self, tree, mode):
@@ -100,34 +130,6 @@ class TotalIPrime(TreeIndex):
     def minimum(self, n, m, mode):
         return float("nan")
 
-    def exp_yule(self, n):
-        return float("nan")
-    
-    def imbalance(self):
-        return 1
-
-
-class MeanIW(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
-            raise ValueError("mean_I_w is not defined for arbitrary trees")
-        try:
-            return tree.mean_I_w
-        except AttributeError:
-            if tree.is_leaf():
-                tree.add_feature("mean_I_w", 0)
-            else:
-                sw = util.I_weight_sum(tree)
-                values = util.I_values(tree, "I_w", sw)
-                tree.add_feature("mean_I_w", sum(values) / len(values))
-            return tree.mean_I_w
-
-    def maximum(self, n, m, mode):
-        return float("nan")
-
-    def minimum(self, n, m, mode):
-        return float("nan")
-    
     def exp_yule(self, n):
         return float("nan")
     
