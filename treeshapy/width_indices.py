@@ -28,8 +28,6 @@ class MaximumWidth(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return -1
 
 
 class MaxdiffWidths(TreeIndex):
@@ -60,9 +58,6 @@ class MaxdiffWidths(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return -1
-
 
 class ModifiedMaxdiffWidths(TreeIndex):
     def evaluate(self, tree, mode):
@@ -92,9 +87,6 @@ class ModifiedMaxdiffWidths(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return -1
-
 
 class MaxWidthOverMaxDepth(TreeIndex):
     def evaluate(self, tree, mode):
@@ -119,5 +111,3 @@ class MaxWidthOverMaxDepth(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return -1

@@ -47,9 +47,6 @@ class TotalCopheneticIndex(TreeIndex):
     def exp_yule(self, n):
         return n * (n + 1) - 2 * n * util.H(n) 
     
-    def imbalance(self):
-        return 1
-
 class Diameter(TreeIndex):
     def evaluate(self, tree, mode):
         try:
@@ -75,9 +72,6 @@ class Diameter(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
     
-    def imbalance(self):
-        return 0
-
 
 class AreaPerPairIndex(TreeIndex):
     def evaluate(self, tree, mode):
@@ -111,8 +105,5 @@ class AreaPerPairIndex(TreeIndex):
         a = (n + 1) / (n - 1)
         return 4 * ((util.H(n) - 1) * a - 1)
     
-    def imbalance(self):
-        return 0
-
 
 

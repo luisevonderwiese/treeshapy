@@ -35,9 +35,6 @@ class RootImbalance(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return 0
-
 
 class IRoot(TreeIndex):
     def evaluate(self, tree, mode):
@@ -68,6 +65,3 @@ class IRoot(TreeIndex):
 
     def exp_yule(self, n):
         return float("nan")
-
-    def imbalance(self):
-        return 0

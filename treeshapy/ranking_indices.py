@@ -20,9 +20,6 @@ class ColijnPlazottaRank(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return 1
-
 
 class FurnasRank(TreeIndex):
     def evaluate(self, tree, mode):
@@ -48,6 +45,3 @@ class FurnasRank(TreeIndex):
 
     def exp_yule(self, n):
         return float("nan")
-    
-    def imbalance(self):
-        return -1

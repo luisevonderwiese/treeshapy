@@ -24,10 +24,6 @@ class MeanI(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return 1
-
-
 class MeanIPrime(TreeIndex):
     def evaluate(self, tree, mode):
         if mode == "ARBITRARY":
@@ -50,10 +46,6 @@ class MeanIPrime(TreeIndex):
 
     def exp_yule(self, n):
         return float("nan")
-
-    def imbalance(self):
-        return 1
-
 
 class MeanIW(TreeIndex):
     def evaluate(self, tree, mode):
@@ -79,10 +71,6 @@ class MeanIW(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return 1
-
-
 
 class TotalI(TreeIndex):
     def evaluate(self, tree, mode):
@@ -106,10 +94,6 @@ class TotalI(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
     
-    def imbalance(self):
-        return 1
-
-
 
 class TotalIPrime(TreeIndex):
     def evaluate(self, tree, mode):
@@ -131,11 +115,6 @@ class TotalIPrime(TreeIndex):
         return float("nan")
 
     def exp_yule(self, n):
-        return float("nan")
-    
-    def imbalance(self):
-        return 1
-
 
 class TotalIW(TreeIndex):
     def evaluate(self, tree, mode):
@@ -159,6 +138,3 @@ class TotalIW(TreeIndex):
 
     def exp_yule(self, n):
         return float("nan")
-    
-    def imbalance(self):
-        return 1

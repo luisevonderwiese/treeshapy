@@ -45,9 +45,6 @@ class CollessIndex(TreeIndex):
     def exp_yule(self, n):
         return (n % 2) + n * (util.H(math.floor(n / 2)) - 1)
 
-    def imbalance(self):
-        return 1
-
 
 class CorrectedCollessIndex(TreeIndex):
     def evaluate(self, tree, mode):
@@ -83,9 +80,6 @@ class CorrectedCollessIndex(TreeIndex):
         e_colless = (n % 2) + n * (util.H(math.floor(n / 2)) - 1)
         return (2 * e_colless) / ((n - 1) * (n - 2))
     
-    def imbalance(self):
-        return 1
-
 
 class QuadraticCollessIndex(TreeIndex):
     def evaluate(self, tree, mode):
@@ -123,9 +117,6 @@ class QuadraticCollessIndex(TreeIndex):
     def exp_yule(self, n):
         return n * (n + 1) - 2 * n * util.H(n)
     
-    def imbalance(self):
-        return 1
-
 
 class I2Index(TreeIndex):
     def evaluate(self, tree, mode):
@@ -161,9 +152,6 @@ class I2Index(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return 1
-
 
 class Stairs1(TreeIndex):
     def evaluate(self, tree, mode):
@@ -197,9 +185,6 @@ class Stairs1(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        raise 1
-
 
 class Stairs2(TreeIndex):
     def evaluate(self, tree, mode):
@@ -232,9 +217,6 @@ class Stairs2(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return -1
-
 
 class J1(TreeIndex):
     def evaluate(self, tree, mode):
@@ -263,9 +245,6 @@ class J1(TreeIndex):
 
     def exp_yule(self, n):
         return float("nan")
-
-    def imbalance(self):
-        return 0
 
 
 class RogersJIndex(TreeIndex):
@@ -308,9 +287,6 @@ class RogersJIndex(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
     
-    def imbalance(self):
-        return 1
-
 
 class SymmetryNodesIndex(TreeIndex):
     def evaluate(self, tree, mode):
@@ -345,8 +321,5 @@ class SymmetryNodesIndex(TreeIndex):
 
     def exp_yule(self, n):
         return float("nan")
-
-    def imbalance(self):
-        return 1
 
 

@@ -26,9 +26,6 @@ class SackinIndex(TreeIndex):
     def exp_yule(self, n):
         return 2 * n * (util.H(n) - 1)
     
-    def imbalance(self):
-        return 1
-
 
 class TotalPathLength(TreeIndex):
     def evaluate(self, tree, mode):
@@ -53,9 +50,6 @@ class TotalPathLength(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
     
-    def imbalance(self):
-        return 1
-
 
 class TotalInternalPathLength(TreeIndex):
     def evaluate(self, tree, mode):
@@ -82,9 +76,6 @@ class TotalInternalPathLength(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
     
-    def imbalance(self):
-        return 1
-
 
 class AverageVertexDepth(TreeIndex):
     def evaluate(self, tree, mode):
@@ -110,9 +101,6 @@ class AverageVertexDepth(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
     
-    def imbalance(self):
-        return 1
-
 
 class AverageLeafDepth(TreeIndex):
     def evaluate(self, tree, mode):
@@ -134,9 +122,6 @@ class AverageLeafDepth(TreeIndex):
     def exp_yule(self, n):
         return 2 * util.H(n) - 2
 
-    def imbalance(self):
-        return 1
-
 
 class VarianceOfLeavesDepths(TreeIndex):
     def evaluate(self, tree, mode):
@@ -157,9 +142,6 @@ class VarianceOfLeavesDepths(TreeIndex):
 
     def exp_yule(self, n):
         return ((2 * (n + 1)) / n) * util.H(n) + (1 / n) - 5
-
-    def imbalance(self):
-        return 1
 
 
 class MaximumDepth(TreeIndex):
@@ -187,8 +169,6 @@ class MaximumDepth(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
     
-    def imbalance(self):
-        return 1
 
 class SShape(TreeIndex):
     def evaluate(self, tree, mode):
@@ -215,9 +195,6 @@ class SShape(TreeIndex):
 
     def exp_yule(self, n):
         return float("nan")
-
-    def imbalance(self):
-        return 1
 
 
 class B1Index(TreeIndex):
@@ -247,9 +224,6 @@ class B1Index(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
     
-    def imbalance(self):
-        return -1
-
 
 class B2Index(TreeIndex):
     def evaluate(self, tree, mode):
@@ -285,6 +259,4 @@ class B2Index(TreeIndex):
     def exp_yule(self, n):
         return util.H(n - 1)
 
-    def imbalance(self):
-        return -1
 

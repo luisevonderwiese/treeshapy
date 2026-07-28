@@ -44,9 +44,6 @@ class CherryIndex(TreeIndex):
             return n - 1
         return n / 3
 
-    def imbalance(self):
-        return 0
-
 
 class ModifiedCherryIndex(TreeIndex):
     def evaluate(self, tree, mode):
@@ -75,9 +72,6 @@ class ModifiedCherryIndex(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return 0
-
 
 class ILNumber(TreeIndex):
     def evaluate(self, tree, mode):
@@ -100,8 +94,6 @@ class ILNumber(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return 0
 
 
 class Pitchforks(TreeIndex):
@@ -125,9 +117,6 @@ class Pitchforks(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return 0
-
 class FourCaterpillars(TreeIndex):
     def evaluate(self, tree, mode):
         try:
@@ -149,9 +138,6 @@ class FourCaterpillars(TreeIndex):
     def exp_yule(self, n):
         return float("nan")
 
-    def imbalance(self):
-        return 0
-
 class DoubleCherries(TreeIndex):
     def evaluate(self, tree, mode):
         try:
@@ -172,7 +158,4 @@ class DoubleCherries(TreeIndex):
 
     def exp_yule(self, n):
         return float("nan")
-
-    def imbalance(self):
-        return 0
 
