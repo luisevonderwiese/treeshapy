@@ -94,6 +94,9 @@ class TreeShape:
             raise ValueError(f"Unknown mode: {mode}")
         if mode == "BINARY" and not util.is_bifurcating(tree, rooted):
             raise ValueError("BINARY mode only possible for strictly bifurcating trees")
+        leaf_names = [l.name for l in tree.iter_leaves()]
+        if len(leaf_names) != len(set(leaf_names)):
+            raise ValueError("Leaf names must be unique")
         self.mode = mode
         self.rooted = rooted
         if not rooted:
