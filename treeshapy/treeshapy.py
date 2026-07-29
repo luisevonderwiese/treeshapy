@@ -154,24 +154,24 @@ class TreeShape:
             index_list = INDICES
         else:
             index_list = INDICES_UNROOTED
-        return self._list_absolute(self, index_list)
+        return self._list_absolute(index_list)
 
     def all_relative(self, rel):
         if self.rooted:
             index_list = INDICES
         else:
             index_list = INDICES_UNROOTED
-        return self._list_relative(self, rel, index_list)
+        return self._list_relative(rel, index_list)
         
     def subset_absolute(self, k):
         if k < 2 or k > 10:
             raise ValueError("Subset size must be in [2, 10]")
-        return self._list_absolute(self, INDEX_SUBSETS[k])
+        return self._list_absolute(INDEX_SUBSETS[k])
 
     def subset_relative(self, rel, k):
         if k < 2 or k > 10:
             raise ValueError("Subset size must be in [2, 10]")
-        return self._list_relative(self, rel, INDEX_SUBSETS[k])
+        return self._list_relative(rel, INDEX_SUBSETS[k])
 
 
     def _list_absolute(self, index_list):
