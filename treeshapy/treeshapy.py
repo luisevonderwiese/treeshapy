@@ -11,7 +11,6 @@ import treeshapy.root_indices as root_indices
 import treeshapy.node_indices as node_indices
 import treeshapy.Ibased_indices as Ibased_indices
 import treeshapy.ranking_indices as ranking_indices
-import treeshapy.branchlength_indices as branchlength_indices
 import treeshapy.util as util
 from treeshapy.subsets import INDEX_SUBSETS
 
@@ -68,7 +67,7 @@ INDICES =[
           "minimum_bcent",
           "maximum_bcent",
           "mean_bcent",
-          "bcent_variance"
+          "bcent_variance",
           "bcent_root",
           "root_imbalance",
           "I_root",

@@ -3,7 +3,7 @@ import os
 import math
 import unittest
 
-from treeshapy.treeshapy import TreeShape, INDICES
+from treeshapy import TreeShape, INDICES
 
 
 class TestMetrics(unittest.TestCase):

@@ -115,6 +115,7 @@ class TotalIPrime(TreeIndex):
         return float("nan")
 
     def exp_yule(self, n):
+        return float("nan")
 
 class TotalIW(TreeIndex):
     def evaluate(self, tree, mode):
