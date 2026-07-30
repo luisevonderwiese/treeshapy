@@ -1,5 +1,6 @@
 import math
 import sys
+from copy import deepcopy
 
 import treeshapy.depth_indices as depth_indices
 import treeshapy.width_indices as width_indices
@@ -12,195 +13,150 @@ import treeshapy.node_indices as node_indices
 import treeshapy.Ibased_indices as Ibased_indices
 import treeshapy.ranking_indices as ranking_indices
 import treeshapy.util as util
-from treeshapy.subsets import INDEX_SUBSETS
+import treeshapy.index_lists as index_lists
 
 sys.set_int_max_str_digits(2147483647) 
 
-INDICES =[
-          "colless_index",
-          "corrected_colless_index",
-          "quadratic_colless_index",
-          "I_2_index",
-          "stairs1",
-          "stairs2",
-          "j1",
-          "rogers_j_index",
-          "symmetry_nodes_index",
-          "mean_I",
-          "mean_I_prime",
-          "mean_I_w",
-          "total_I",
-          "total_I_prime",
-          "total_I_w",
-          "sackin_index",
-          "total_path_length",
-          "total_internal_path_length",
-          "average_vertex_depth",
-          "average_leaf_depth",
-          "variance_of_leaves_depths",
-          "maximum_depth",          
-          "s_shape",
-          "B_1_index",
-          "B_2_index",
-          "maximum_width",
-          "maxdiff_widths",
-          "modified_maxdiff_widths",
-          "max_width_over_max_depth",
-          "d_index",
-          "rooted_quartet_index",
-          "average_ladder",
-          "ladder_length",
-          "cherry_index",
-          "modified_cherry_index",
-          "IL_number",
-          "pitchforks",
-          "four_caterpillars",
-          "double_cherries",
-          "total_cophenetic_index",
-          "diameter",
-          "area_per_pair_index",
-          "wiener_index",
-          "maximum_closeness",
-          "minimum_farness",
-          "maximum_farness",
-          "total_farness",
-          "minimum_bcent",
-          "maximum_bcent",
-          "mean_bcent",
-          "bcent_variance",
-          "bcent_root",
-          "root_imbalance",
-          "I_root",
-          "colijn_plazotta_rank",
-          "furnas_rank"]
 
-
-INDICES_UNROOTED = ["diameter",
-          "area_per_pair_index",
-          "wiener_index",
-          "maximum_closeness",
-          "minimum_farness",
-          "maximum_farness",
-          "total_farness",
-          "minimum_bcent",
-          "maximum_bcent",
-          "mean_bcent",
-          "bcent_variance"]
+INDICES = list(index_lists.INDICES.keys())
 
 class TreeShape:
-    def __init__(self, tree, mode, rooted = True):
-        if mode not in ["BINARY", "ARBITRARY"]:
-            raise ValueError(f"Unknown mode: {mode}")
-        if mode == "BINARY" and not util.is_bifurcating(tree, rooted):
-            raise ValueError("BINARY mode only possible for strictly bifurcating trees")
+    def __init__(self, tree, binary = "auto", rooted = "auto"):
         leaf_names = [l.name for l in tree.iter_leaves()]
         if len(leaf_names) != len(set(leaf_names)):
             raise ValueError("Leaf names must be unique")
-        self.mode = mode
-        self.rooted = rooted
-        if not rooted:
-            tree = util.remove_implicit_root(tree)
         self.tree = tree
+        if rooted == "auto":
+            self.rooted = (len(self.tree.children) == 2)
+        else:
+            self.rooted = rooted
+            if not self.rooted and not len(self.tree.children) in [0, 2]:
+                print("Warning: Removing implitict root")
+                self.tree = util.remove_implicit_root(self.tree)
+        bifurcating = util.is_bifurcating(self.tree, self.rooted)
+        if binary == "auto":
+            self.binary = bifurcating
+        else:
+            self.binary = binary
+            if self.binary and not bifurcating:
+                raise ValueError("Input tree contains polytomies. Set binary = False or binary = \"auto\" or resolve polytomies in the input tree")
+            if not self.binary and bifurcating:
+                print("Warning: Input Tree is binary but will be considered as multifurcating. Not all indices are available and normalization is changed")
+        if self.rooted and len(self.tree.children) > 2:
+            if self.binary:
+                raise ValueError("Input Tree is unrooted. Set rooted = False or rooted =  \"auto\" or root the input tree")
+            else:
+                print("Warning: Tree is considered as rooted, multifurcation at root")
+            
         self.n = len(tree)
-        if mode == "BINARY":
+        if binary:
             if rooted:
                 self.m = self.n - 1
             else:
                 self.m = self.n - 2
         else:
-            self.m = len([node for node in tree.traverse()]) - self.n
-        self.indices = {}
+            self.m = len([node for node in self.tree.traverse()]) - self.n
+        self._indices = {}
 
-    def index(self, index_name):
-        if index_name not in self.indices:
-            instance = self.index_instance(index_name)
+        if not self.rooted:
+            self.all_rooted_trees = None
+            self.ts_instances = None
+
+    def _index(self, index_name):
+        if index_name not in self._indices:
+            instance = self._index_instance(index_name)
             if instance is None:
                 raise ValueError(f"Unknown index: {index_name}")
-            self.indices[index_name] = instance
-        return self.indices[index_name]
+            self._indices[index_name] = instance
+        return self._indices[index_name]
 
-    def absolute(self, index_name):
-        if not self.rooted and index_name not in INDICES_UNROOTED:
-            raise ValueError(index_name + "not defined for unrooted trees")
-        return self.index(index_name).evaluate(self.tree, self.mode)
+    def _absolute(self, index_name):
+        return self._index(index_name).evaluate(self.tree, self.binary)
 
-    def relative(self, index_name, rel):
-        v = self.absolute(index_name)
+    
+    def _relative(self, index_name, rel):
+        v = self._absolute(index_name)
         if rel == "MAX":
-            min_v = self.index(index_name).minimum(self.n, self.m, self.mode)
-            max_v = self.index(index_name).maximum(self.n, self.m, self.mode)
+            min_v = self._index(index_name).minimum(self.n, self.m, self.binary)
+            max_v = self._index(index_name).maximum(self.n, self.m, self.binary)
             if (not isinstance(min_v, int) and math.isnan(min_v)) or (not isinstance(max_v, int) and math.isnan(max_v)):
                 return float("nan")
-                #raise ValueError(index_name + " cannot be normalized for " + self.mode.lower() + " trees")
             if min_v == max_v:
-                raise ValueError("Minimum equals maximum for " + index_name +  " for " + self.mode.lower() + " trees")
+                raise ValueError(f"Minimum equals maximum for {index_name} for {self.mode.lower()} trees")
             if max_v - v < -0.00001:
-                raise ArithmeticError("Value above maximum for " + index_name)
+                raise ArithmeticError(f"Value above maximum for {index_name}")
             if v - min_v < -0.00001:
-                raise ArithmeticError("Value below minimum for " + index_name)
+                raise ArithmeticError(f"Value below minimum for {index_name}")
             return (v - min_v) / (max_v - min_v)
         if rel == "YULE":
-            e = self.index(index_name).exp_yule(self.n)
+            e = self._index(index_name).exp_yule(self.n)
             if math.isnan(e):
                 return float("nan")
             return (v - e) / self.n
         if rel == "TIPS":
             return v / self.n
-        raise ValueError(rel + " is not a normalization mode")
-
-
-    def all_absolute(self):
-        if self.rooted:
-            index_list = INDICES
+        raise ValueError(f"REL_{rel} is not a evaluation mode. Choose from ABS, REL_TIPS, REL_MAX, REL_YULE")
+    
+    def evaluate(self, param, eval_mode = "ABS"):
+        if isinstance(param, str) and param != "all":
+            if eval_mode == "ABS":
+                return self._absolute(param)
+            elif eval_mode.startswith("REL"):
+                return self._relative(param, eval_mode.split("_")[1])
+            else:
+                raise ValueError(f"{eval_mode} is not an evaluation mode. Choose from ABS, REL_TIPS, REL_MAX, REL_YULE")
+        elif param == "all":
+            return {index : self.evaluate(index, eval_mode) for index in self.index_list(eval_mode)}
         else:
-            index_list = INDICES_UNROOTED
-        return self._list_absolute(index_list)
-
-    def all_relative(self, rel):
-        if self.rooted:
-            index_list = INDICES
-        else:
-            index_list = INDICES_UNROOTED
-        return self._list_relative(rel, index_list)
+            return {index : self.evaluate(index, eval_mode) for index in self.index_list(param)}
         
-    def subset_absolute(self, k):
-        if k < 2 or k > 10:
-            raise ValueError("Subset size must be in [2, 10]")
-        return self._list_absolute(INDEX_SUBSETS[k])
+    def index_list(self, param):
+        if isinstance(param, str): # param is eval_mode
+            return index_lists.get_list(self.binary, self.rooted, param)
+        if not isinstance(param, int):
+            raise ValueError(f"Illegal Argument: {param}")
+        if not self.binary and self.rooted:
+            raise ValueError("Subsets only defined for binary rooted trees")
+        return index_lists.get_subset(param)
 
-    def subset_relative(self, rel, k):
-        if k < 2 or k > 10:
-            raise ValueError("Subset size must be in [2, 10]")
-        return self._list_relative(rel, INDEX_SUBSETS[k])
-
-
-    def _list_absolute(self, index_list):
-        res = {}
-        for index_name in index_list:
-            try:
-                v = self.absolute(index_name)
-            except ValueError:
-                res[index_name] = float("nan")
-                continue
-            res[index_name] = v
-        return res
-
-    def _list_relative(self, rel, index_list):
-        if rel == "YULE":
-            if not self.mode == "BINARY":
-                raise ValueError("YULE normalization only makes sense for binary trees")
-            if self.n == 1:
-                raise ValueError("YULE normalization not supported for single-node-trees")
-        res = {}
-        for index_name in index_list:
-            try:
-                res[index_name] = self.relative(index_name, rel)
-            except (ValueError, ArithmeticError) as e:
-                res[index_name] = float("nan")
-        return res
+    def evaluate_for_all_roots(self, param, eval_mode = "ABS"):
+        if self.rooted: 
+            raise ValueError("All roots mode only possible for unrooted trees")
+        if self.all_rooted_trees is None:
+            self.all_rooted_trees = self._all_rooted_trees(self.tree)
+            self.ts_instances = {name : TreeShape(tree, self.binary, True) for name, tree in self.all_rooted_trees.items()}
+        return {branch_name : ts.evaluate(param, eval_mode) for branch_name, ts in self.ts_instances.items()}
+    
+    def index_list_for_all_roots(self, param):
+        if self.rooted:
+            raise ValueError("All roots mode only possible for unrooted trees")
+        if isinstance(param, str): # param is eval_mode
+            return index_lists.get_list(self.binary, rooted, param)
+        if not isinstance(param, int):
+            raise ValueError(f"Illegal Argument: {param}")
+        if not self.binary:
+            raise ValueError("Subsets only defined for binary rooted trees")
+        return index_lists.get_subset(param)
 
 
-    def index_instance(self, index_name):
+    def _all_rooted_trees(self, tree):
+        internal_count = 0
+        node_names = []
+        for node in tree.iter_descendants():
+            if not node.is_leaf():
+                node.name = "internal_" + str(internal_count)
+                internal_count += 1
+            node_names.append(node.name)
+        rooted_trees = {}
+        for name in node_names:
+            rooted_tree = deepcopy(tree)
+            root = rooted_tree&name
+            rooted_tree.set_outgroup(root)
+            rooted_trees[name] = rooted_tree
+        return rooted_trees
+
+
+    def _index_instance(self, index_name):
         match index_name:
             case "colless_index":
                 return node_indices.CollessIndex()

@@ -4,7 +4,7 @@ import treeshapy.util as util
 from treeshapy.tree_index import TreeIndex
 
 class CherryIndex(TreeIndex):
-    #def evaluate_only(self, tree, mode):
+    #def evaluate_only(self, tree, binary):
     #    cnt = 0
     #    for node in tree.traverse("postorder"):
     #        if node.is_leaf():
@@ -14,7 +14,7 @@ class CherryIndex(TreeIndex):
     #            cnt += math.comb(direct_leaves, 2)
     #    return  cnt
 
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.cherry_index
         except AttributeError:
@@ -28,13 +28,13 @@ class CherryIndex(TreeIndex):
             tree.add_feature("cherry_index", cnt)
             return tree.cherry_index
 
-    def maximum(self, n, m, mode):
-        if mode == "BINARY":
+    def maximum(self, n, m, binary):
+        if binary:
             return math.floor(n / 2)
-        if mode == "ARBITRARY":
+        else:
             return math.comb(n, 2)
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         if n == 1:
             return 0
         return 1
@@ -46,27 +46,27 @@ class CherryIndex(TreeIndex):
 
 
 class ModifiedCherryIndex(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("modified_cherry_index is not defined for arbitrary trees")
         try:
             return tree.modified_cherry_index
         except AttributeError:
-            tree.add_feature("modified_cherry_index", util.clade_size(tree, tree) - 2 * CherryIndex().evaluate(tree, mode))
+            tree.add_feature("modified_cherry_index", util.clade_size(tree, tree) - 2 * CherryIndex().evaluate(tree, binary))
             return tree.modified_cherry_index
 
-    def maximum(self, n, m, mode):
-        if mode == "BINARY":
+    def maximum(self, n, m, binary):
+        if binary:
             if n == 1:
                 return 1
             return n - 2
-        if mode == "ARBITRARY":
+        else:
             return float("nan")
 
-    def minimum(self, n, m, mode):
-        if mode == "BINARY":
+    def minimum(self, n, m, binary):
+        if binary:
             return n % 2
-        if mode == "ARBITRARY":
+        else:
             return float("nan")
     
     def exp_yule(self, n):
@@ -74,7 +74,7 @@ class ModifiedCherryIndex(TreeIndex):
 
 
 class ILNumber(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.IL_number
         except AttributeError:
@@ -85,10 +85,10 @@ class ILNumber(TreeIndex):
             tree.add_feature("IL_number", cnt)
             return tree.IL_number
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
@@ -97,7 +97,7 @@ class ILNumber(TreeIndex):
 
 
 class Pitchforks(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.pitchforks
         except AttributeError:
@@ -108,17 +108,17 @@ class Pitchforks(TreeIndex):
             tree.add_feature("pitchforks", cnt)
             return tree.pitchforks
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
         return float("nan")
 
 class FourCaterpillars(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.four_caterpillars
         except AttributeError:
@@ -129,17 +129,17 @@ class FourCaterpillars(TreeIndex):
             tree.add_feature("four_caterpillars", cnt)
             return tree.four_caterpillars
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
         return float("nan")
 
 class DoubleCherries(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.double_cherries
         except AttributeError:
@@ -150,10 +150,10 @@ class DoubleCherries(TreeIndex):
             tree.add_feature("double_cherries", cnt)
             return tree.double_cherries
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):

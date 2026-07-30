@@ -2,8 +2,8 @@ import treeshapy.util as util
 from treeshapy.tree_index import TreeIndex
 
 class MeanI(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("mean_I is not defined for arbitrary trees")
         try:
             return tree.mean_I
@@ -15,18 +15,18 @@ class MeanI(TreeIndex):
                 tree.add_feature("mean_I", sum(values) / len(values))
             return tree.mean_I
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
         return float("nan")
 
 class MeanIPrime(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("mean_I_prime is not defined for arbitrary trees")
         try:
             return tree.mean_I_prime
@@ -38,18 +38,18 @@ class MeanIPrime(TreeIndex):
                 tree.add_feature("mean_I_prime", sum(values) / len(values))
             return tree.mean_I_prime
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
         return float("nan")
 
 class MeanIW(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("mean_I_w is not defined for arbitrary trees")
         try:
             return tree.mean_I_w
@@ -62,10 +62,10 @@ class MeanIW(TreeIndex):
                 tree.add_feature("mean_I_w", sum(values) / len(values))
             return tree.mean_I_w
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
@@ -73,8 +73,8 @@ class MeanIW(TreeIndex):
 
 
 class TotalI(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("total_I is not defined for arbitrary trees")
         try:
             return tree.total_I
@@ -85,10 +85,10 @@ class TotalI(TreeIndex):
                 tree.add_feature("total_I", sum(util.I_values(tree, "I")))
             return tree.total_I
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
@@ -96,8 +96,8 @@ class TotalI(TreeIndex):
     
 
 class TotalIPrime(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("total_I_prime is not defined for arbitrary trees")
         try:
             return tree.total_I_prime
@@ -108,18 +108,18 @@ class TotalIPrime(TreeIndex):
                 tree.add_feature("total_I_prime", sum(util.I_values(tree, "I_prime")))
             return tree.total_I_prime
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
         return float("nan")
 
 class TotalIW(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("total_I_w is not defined for arbitrary trees")
         try:
             return tree.total_I_w
@@ -131,10 +131,10 @@ class TotalIW(TreeIndex):
                 tree.add_feature("total_I_w", sum(util.I_values(tree, "I_w", sw)))
             return tree.total_I_w
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):

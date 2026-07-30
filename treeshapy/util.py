@@ -398,7 +398,7 @@ def is_bifurcating(tree, rooted = True):
         if rooted:
             tree.add_feature("bifurcating", bifurcating_recursive(tree))
         else:
-            if not len(tree.children) in [2, 3]:
+            if not len(tree.children) in [0, 2, 3]:
                 tree.add_feature("bifurcating", False)
                 return False
             tree.add_feature("bifurcating", True)

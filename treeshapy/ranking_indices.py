@@ -2,8 +2,8 @@ import treeshapy.util as util
 from treeshapy.tree_index import TreeIndex
 
 class ColijnPlazottaRank(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("colijn_plazotta_rank is not defined for arbitrary trees")
         try:
             return tree.colijn_plazotta_rank
@@ -11,10 +11,10 @@ class ColijnPlazottaRank(TreeIndex):
             util.colijn_plazotta_recursive(tree)
             return tree.colijn_plazotta_rank
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float('nan')
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float('nan')
 
     def exp_yule(self, n):
@@ -22,8 +22,8 @@ class ColijnPlazottaRank(TreeIndex):
 
 
 class FurnasRank(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("furnas_rank is not defined for arbitrary trees")
         try:
             return tree.furnas_rank #check if furnas ranks already precomputed
@@ -31,16 +31,16 @@ class FurnasRank(TreeIndex):
             util.furnas_ranks(tree)
             return tree.furnas_rank
 
-    def maximum(self, n, m, mode):
-        if mode == "BINARY":
+    def maximum(self, n, m, binary):
+        if binary:
             return util.we(n)
-        if mode == "ABITRARY":
+        else:
             return float("nan")
 
-    def minimum(self, n, m, mode):
-        if mode == "BINARY":
+    def minimum(self, n, m, binary):
+        if binary:
             return 1
-        if mode == "ARBITRARY":
+        else:
             return float("nan")
 
     def exp_yule(self, n):

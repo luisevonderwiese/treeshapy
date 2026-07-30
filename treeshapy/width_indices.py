@@ -3,24 +3,23 @@ from treeshapy.tree_index import TreeIndex
 from treeshapy.depth_indices import MaximumDepth
 
 class MaximumWidth(TreeIndex):
-    #def evaluate_only(self, tree, mode):
+    #def evaluate_only(self, tree, binary):
     #    return max(util.widths(tree).values())
 
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.maximum_width
         except AttributeError:
             tree.add_feature("maximum_width", max(util.widths(tree).values()))
             return tree.maximum_width
 
-    def maximum(self, n, m, mode):
-        if mode == "BINARY":
+    def maximum(self, n, m, binary):
+        if binary:
             return float("nan")
-        if mode == "ARBITRARY":
+        else:
             return n
-        return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         if n == 1:
             return 1
         return 2
@@ -31,7 +30,7 @@ class MaximumWidth(TreeIndex):
 
 
 class MaxdiffWidths(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.maxdiff_widths
         except AttributeError:
@@ -43,14 +42,13 @@ class MaxdiffWidths(TreeIndex):
             tree.add_feature("maxdiff_widths", res)
             return tree.maxdiff_widths
 
-    def maximum(self, n, m, mode):
-        if mode == "BINARY":
+    def maximum(self, n, m, binary):
+        if binary:
             return float("nan")
-        if mode == "ARBITRARY":
+        else:
             return n - 1
-        return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         if n == 1:
             return 0
         return 1
@@ -60,7 +58,7 @@ class MaxdiffWidths(TreeIndex):
 
 
 class ModifiedMaxdiffWidths(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.modified_maxdiff_widths
         except AttributeError:
@@ -72,14 +70,13 @@ class ModifiedMaxdiffWidths(TreeIndex):
             tree.add_feature("modified_maxdiff_widths", res)
             return tree.modified_maxdiff_widths
 
-    def maximum(self, n, m, mode):
-        if mode == "BINARY":
+    def maximum(self, n, m, binary):
+        if binary:
             return float("nan")
-        if mode == "ARBITRARY":
+        else:
             return n - 1
-        return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         if n == 1:
             return 0
         return 1
@@ -89,21 +86,21 @@ class ModifiedMaxdiffWidths(TreeIndex):
 
 
 class MaxWidthOverMaxDepth(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.max_width_over_max_depth
         except AttributeError:
-            h = MaximumDepth().evaluate(tree, mode)
+            h = MaximumDepth().evaluate(tree, binary)
             if h == 0:
                 tree.add_feature("max_width_over_max_depth", 0)
             else:
-                tree.add_feature("max_width_over_max_depth", MaximumWidth().evaluate(tree, mode) / h)
+                tree.add_feature("max_width_over_max_depth", MaximumWidth().evaluate(tree, binary) / h)
             return tree.max_width_over_max_depth
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float('nan')
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         if n == 1:
             return 0
         return 2 / (n - 1)

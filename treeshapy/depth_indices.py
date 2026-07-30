@@ -5,20 +5,20 @@ import treeshapy.util as util
 from treeshapy.tree_index import TreeIndex
 
 class SackinIndex(TreeIndex):
-    #def evaluate_only(self, tree, mode):
+    #def evaluate_only(self, tree, binary):
     #    return sum(util.leaf_depths(tree))
 
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.sackin_index
         except AttributeError:
             tree.add_feature("sackin_index", sum(util.leaf_depths(tree)))
             return tree.sackin_index
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return (n * m) - (((m - 1) * m) / 2)
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         k = n - m + 1
         x = math.floor(math.log2(n / k))
         return (x + 3) * n - k * math.pow(2, x + 1)
@@ -28,23 +28,23 @@ class SackinIndex(TreeIndex):
     
 
 class TotalPathLength(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.total_path_length
         except AttributeError:
             tree.add_feature("total_path_length", sum([util.depth(tree, node) for node in tree.traverse("postorder")]))
             return tree.total_path_length
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return (n * n) - n
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         if n == 1:
             return 0
-        if mode == "BINARY":
+        if binary:
             log_val = math.floor(math.log2(n))
             return 2 * log_val * n - math.pow(2, log_val + 2) + 2 * n + 2
-        if mode == "ARBITRARY":
+        else:
             return n
     
     def exp_yule(self, n):
@@ -52,7 +52,7 @@ class TotalPathLength(TreeIndex):
     
 
 class TotalInternalPathLength(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.total_internal_path_length
         except AttributeError:
@@ -63,14 +63,14 @@ class TotalInternalPathLength(TreeIndex):
             tree.add_feature("total_internal_path_length", s)
             return tree.total_internal_path_length
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return ((n - 1) * (n - 2)) / 2
 
-    def minimum(self, n, m, mode):
-        if mode == "BINARY":
+    def minimum(self, n, m, binary):
+        if binary:
             log_val = math.floor(math.log2(n))
             return log_val * n - math.pow(2, log_val + 1) + 2
-        if mode == "ARBITRARY":
+        else:
             return 0
     
     def exp_yule(self, n):
@@ -78,7 +78,7 @@ class TotalInternalPathLength(TreeIndex):
     
 
 class AverageVertexDepth(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.average_vertex_depth
         except AttributeError:
@@ -86,16 +86,16 @@ class AverageVertexDepth(TreeIndex):
             tree.add_feature("average_vertex_depth", sum(depths) / len(depths))
             return tree.average_vertex_depth
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return ((n * n) - n) / (2 * n - 1)
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         if n == 1:
             return 0
-        if mode == "BINARY":
+        if binary:
             log_val = math.floor(math.log2(n))
             return (2 * log_val * n - math.pow(2, log_val + 2) + 2 * n + 2) / (2 * n - 1)
-        if mode == "ARBITRARY":
+        else:
             return n / (n + 1)
 
     def exp_yule(self, n):
@@ -103,7 +103,7 @@ class AverageVertexDepth(TreeIndex):
     
 
 class AverageLeafDepth(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.average_leaf_depth
         except AttributeError:
@@ -111,10 +111,10 @@ class AverageLeafDepth(TreeIndex):
             tree.add_feature("average_leaf_depth", sum(depths) / len(depths))
             return tree.average_leaf_depth
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return m - (((m - 1) * m) / (2 * n))
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         k = n - m + 1
         x = math.floor(math.log2(n / k))
         return  x + 3 - (k / n) * math.pow(2, x + 1)
@@ -124,20 +124,20 @@ class AverageLeafDepth(TreeIndex):
 
 
 class VarianceOfLeavesDepths(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.variance_of_leaves_depths
         except AttributeError:
             tree.add_feature("variance_of_leaves_depths", float(np.var(util.leaf_depths(tree))))
             return tree.variance_of_leaves_depths
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return ((n - 1) * (n - 2) * (n*n + 3*n -6)) / (12 * n * n)
 
-    def minimum(self, n, m, mode):
-        if mode == "BINARY":
+    def minimum(self, n, m, binary):
+        if binary:
             return float("nan")
-        if mode == "ARBITRARY":
+        else:
             return 0
 
     def exp_yule(self, n):
@@ -145,25 +145,25 @@ class VarianceOfLeavesDepths(TreeIndex):
 
 
 class MaximumDepth(TreeIndex):
-    #def evaluate_only(self, tree, mode):
+    #def evaluate_only(self, tree, binary):
     #    return max(util.leaf_depths(tree))
 
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.maximum_depth
         except AttributeError:
             tree.add_feature("maximum_depth", max(util.leaf_depths(tree)))
             return tree.maximum_depth
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return n - 1
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         if n == 1:
             return 0
-        if mode == "BINARY":
+        if binary:
             return math.ceil(math.log2(n))
-        if mode == "ARBITRARY":
+        else:
             return 1
     
     def exp_yule(self, n):
@@ -171,7 +171,7 @@ class MaximumDepth(TreeIndex):
     
 
 class SShape(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.s_shape
         except AttributeError:
@@ -182,13 +182,13 @@ class SShape(TreeIndex):
             tree.add_feature("s_shape", s)
             return tree.s_shape
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return math.log2(math.factorial(n - 1))
 
-    def minimum(self, n, m, mode):
-        if mode == "BINARY":
+    def minimum(self, n, m, binary):
+        if binary:
             return float("nan")
-        if mode == "ARBITRARY":
+        else:
             if n == 1:
                 return 0
             return math.log2(n - 1)
@@ -198,7 +198,7 @@ class SShape(TreeIndex):
 
 
 class B1Index(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.B_1_index
         except AttributeError:
@@ -215,10 +215,10 @@ class B1Index(TreeIndex):
             return tree.B_1_index
 
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float('nan')
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float('nan')
 
     def exp_yule(self, n):
@@ -226,7 +226,7 @@ class B1Index(TreeIndex):
     
 
 class B2Index(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.B_2_index
         except AttributeError:
@@ -245,15 +245,15 @@ class B2Index(TreeIndex):
             tree.add_feature("B_2_index", - s)
             return tree.B_2_index
 
-    def maximum(self, n, m, mode):
-        if mode == "BINARY":
+    def maximum(self, n, m, binary):
+        if binary:
             x  = math.floor(math.log2(n))
             pow_x = math.pow(2, x)
             return x + ((n - pow_x) / pow_x)
-        if mode == "ARBITRARY":
+        else:
             return math.log2(n)
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return 2 - math.pow(2, 2 - n)
 
     def exp_yule(self, n):

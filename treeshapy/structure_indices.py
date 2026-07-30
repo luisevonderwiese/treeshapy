@@ -6,7 +6,7 @@ from treeshapy.tree_index import TreeIndex
 
 
 class DIndex(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.d_index
         except AttributeError:
@@ -24,10 +24,10 @@ class DIndex(TreeIndex):
                 tree.add_feature("d_index", s)
             return tree.d_index
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
@@ -35,20 +35,20 @@ class DIndex(TreeIndex):
 
 
 class RootedQuartetIndex(TreeIndex):
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         try:
             return tree.rooted_quartet_index #check if rqis already precomputed
         except AttributeError:
             util.precompute_rqi(tree)
             return tree.rooted_quartet_index
 
-    def maximum(self, n, m, mode):
-        if mode == "BINARY":
+    def maximum(self, n, m, binary):
+        if binary:
             return float("nan")
-        if mode == "ARBITRARY":
+        else:
             return 4 * math.comb(n, 4)
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return 0
 
     def exp_yule(self, n):
@@ -56,8 +56,8 @@ class RootedQuartetIndex(TreeIndex):
 
 
 class AverageLadder(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("average_ladder is not defined for arbitrary trees")
         try:
             return tree.average_ladder
@@ -76,18 +76,18 @@ class AverageLadder(TreeIndex):
                 tree.add_feature("average_ladder", sum(l) / len(l))
             return tree.average_ladder
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):
         return float("nan")
 
 class LadderLength(TreeIndex):
-    def evaluate(self, tree, mode):
-        if mode == "ARBITRARY":
+    def evaluate(self, tree, binary):
+        if not binary:
             raise ValueError("ladder_length is not defined for arbitrary trees")
         try:
             return tree.max_ladder_length
@@ -99,10 +99,10 @@ class LadderLength(TreeIndex):
             tree.add_feature("max_ladder_length", max([node.ladder_length for node in tree.traverse()]))
             return tree.max_ladder_length
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         return float("nan")
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         return float("nan")
 
     def exp_yule(self, n):

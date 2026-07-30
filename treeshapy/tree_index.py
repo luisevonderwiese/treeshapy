@@ -1,11 +1,11 @@
 class TreeIndex:
-    def evaluate(self, tree, mode):
+    def evaluate(self, tree, binary):
         raise NotImplementedError
 
-    def maximum(self, n, m, mode):
+    def maximum(self, n, m, binary):
         raise NotImplementedError
 
-    def minimum(self, n, m, mode):
+    def minimum(self, n, m, binary):
         raise NotImplementedError
     
     def exp_yule(self, n):
