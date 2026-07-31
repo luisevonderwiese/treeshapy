@@ -59,8 +59,8 @@ class TreeShape:
         self._indices = {}
 
         if not self.rooted:
-            self.all_rooted_trees = None
-            self.ts_instances = None
+            self._all_rooted_trees = None
+            self._ts_instances = None
 
     def _index(self, index_name):
         if index_name not in self._indices:
@@ -110,7 +110,7 @@ class TreeShape:
         else:
             return {index : self.evaluate(index, eval_mode) for index in self.index_list(param)}
         
-    def index_list(self, param):
+    def index_list(self, param = "ABS"):
         if isinstance(param, str): # param is eval_mode
             return index_lists.get_list(self.binary, self.rooted, param)
         if not isinstance(param, int):
@@ -122,24 +122,31 @@ class TreeShape:
     def evaluate_for_all_roots(self, param, eval_mode = "ABS"):
         if self.rooted: 
             raise ValueError("All roots mode only possible for unrooted trees")
-        if self.all_rooted_trees is None:
-            self.all_rooted_trees = self._all_rooted_trees(self.tree)
-            self.ts_instances = {name : TreeShape(tree, self.binary, True) for name, tree in self.all_rooted_trees.items()}
-        return {branch_name : ts.evaluate(param, eval_mode) for branch_name, ts in self.ts_instances.items()}
+        if self._all_rooted_trees is None:
+            self._all_rooted_trees = self._find_all_rooted_trees(self.tree)
+        if self._ts_instances is None:
+            self._ts_instances = {name : TreeShape(tree, self.binary, True) for name, tree in self._all_rooted_trees.items()}
+        return {branch_name : ts.evaluate(param, eval_mode) for branch_name, ts in self._ts_instances.items()}
     
     def index_list_for_all_roots(self, param):
         if self.rooted:
             raise ValueError("All roots mode only possible for unrooted trees")
         if isinstance(param, str): # param is eval_mode
-            return index_lists.get_list(self.binary, rooted, param)
+            return index_lists.get_list(self.binary, True, param)
         if not isinstance(param, int):
             raise ValueError(f"Illegal Argument: {param}")
         if not self.binary:
             raise ValueError("Subsets only defined for binary rooted trees")
         return index_lists.get_subset(param)
 
+    def get_all_rooted_trees(self):
+        if self._all_rooted_trees is None:
+            self._all_rooted_trees = self._find_all_rooted_trees(self.tree)
+        return self._all_rooted_trees
 
-    def _all_rooted_trees(self, tree):
+
+
+    def _find_all_rooted_trees(self, tree):
         internal_count = 0
         node_names = []
         for node in tree.iter_descendants():
