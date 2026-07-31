@@ -15,7 +15,9 @@ license = "GPL-3.0-or-later"
 requires-python = ">=3.12"
 dependencies = [
     "numpy",
-    "ete3"
+    "ete3",
+    "legacy-cgi",
+    "importlib-resources"
 ]
 
 [tool.setuptools.packages.find]

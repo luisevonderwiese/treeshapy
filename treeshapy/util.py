@@ -1,7 +1,8 @@
 import math
 import numpy as np
 import json
-import pkg_resources
+import os
+import importlib_resources
 from collections import Counter
 
 we_dict = None
@@ -202,8 +203,9 @@ def read_we():
     global we_dict
     if we_dict is not None:
         return
-    stream = pkg_resources.resource_stream(__name__, 'resources/we.json')
-    we_dict = json.loads(stream.read())
+    ref = importlib_resources.files('treeshapy').joinpath("resources/we.json")
+    with ref.open('rb') as fp:
+        we_dict = json.loads(fp.read())
     we_dict = {int(k): int(v) for k, v in we_dict.items()}
 
 def we(n):
