@@ -1,0 +1,14 @@
+site_name: treeshapy
+site_description: Tree Shape Index Evaluation
+
+theme:
+  name: material
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: true
