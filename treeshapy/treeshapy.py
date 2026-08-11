@@ -1,3 +1,8 @@
+"""Tool for evaluating tree shape indices.
+Based on ete3.
+Stores intermediate results and index values as node attributes in the tree object.
+"""
+
 import math
 import sys
 from copy import deepcopy
@@ -21,6 +26,30 @@ sys.set_int_max_str_digits(2147483647)
 INDICES = list(index_lists.INDICES.keys())
 
 class TreeShape:
+
+    """Evaluate tree shape indices for a phylogenetic tree
+
+    Parameters
+    ----------
+    tree : Tree
+        Tree for which tree shape indices are evaluated. Leaf names must be unique.
+    binary : bool or str
+        * True - assumes that the tree does not contain multifurcations. Raises a ValueError if it does.
+        * False - assumes that the tree does contain multifurcations. Does not raise an error if the tree is binary, but normalization and the availability of indices is affected.
+        * ``"auto"`` (default) - recognize automatically whether the tree contains multifurcations
+    rooted: bool or str
+        * True - assumes that the tree is rooted, that is, the toplevel node is the root. Raises a ValueError, if ``binary=True`` and the toplevel node has more than two children.
+        * False - assumes that the tree is unrooted. If the toplevel node is binary it is assumed to be an implicit root and it is removed. 
+        * ``"auto"`` (default) - recognize automatically whether the tree is rooted. We assume that a tree is rooted if and only if the toplevel node is binary. For tree with multifurcation at the root set ``rooted=True`` explicitly.
+
+    Raises
+    ------
+    ValueError
+        If leaf names in the tree are not unique.
+        If ``binary=True`` but the tree contains (internal) multifurcations.
+        If ``binary=True``and ``rooted=True`` but the toplevel node has more than two children
+
+    """
     def __init__(self, tree, binary = "auto", rooted = "auto"):
         leaf_names = [l.name for l in tree.iter_leaves()]
         if len(leaf_names) != len(set(leaf_names)):
@@ -30,7 +59,7 @@ class TreeShape:
             self.rooted = (len(self.tree.children) == 2)
         else:
             self.rooted = rooted
-            if not self.rooted and not len(self.tree.children) in [0, 2]:
+            if not self.rooted and len(self.tree.children) == 2:
                 print("Warning: Removing implitict root")
                 self.tree = util.remove_implicit_root(self.tree)
         bifurcating = util.is_bifurcating(self.tree, self.rooted)
@@ -94,10 +123,39 @@ class TreeShape:
                 return float("nan")
             return (v - e) / self.n
         if rel == "TIPS":
+            if index_name == "furnas_rank":
+                return float("nan") #integer division result too large for a float
             return v / self.n
         raise ValueError(f"REL_{rel} is not a evaluation mode. Choose from ABS, REL_TIPS, REL_MAX, REL_YULE")
     
     def evaluate(self, param, eval_mode = "ABS"):
+    """Evaluate indices
+
+    Parameters
+    ----------
+    param : str or int
+        * ``"all"`` - Evaluate all defined indices
+        * index name (str) - Evaluate the index with the given index name
+        * k (int) - Evaluate k indices with minimum pairwise correlation
+    eval_mode : str
+        * ``"ABS"`` (default) - Absolute index value
+        * ``"REL_TIPS"`` - Index value normalized with the number of tips
+        * ``"REL_MAX"`` - Index value normalized with the maximum value
+        * ``"REL_YULE"`` - Index value normalized with the expected value under the Yule model
+    Returns
+    -------
+        * int or float  - if a single index is evaluated. Index value for the tree.
+        * dict[str, int or float] - If multiple indices are evaluted. Maps index names to index values.
+    Raises
+    ------
+    ValueError
+        If ``param`` is a string but not ``"all"``and not a proper index name.
+        If ``param``is an integer but the tree is not binary and rooted (subsets not defined).
+        If ``param`` is an integer but not in [2, 10] (subsets not defined)
+        If ``eval_mode`` not in [``"ABS"``, ``"REL_TIPS"``, ``"REL_MAX"``, ``"REL_YULE"``].
+    ArithmeticError
+        If there is an Error during normalization.
+    """
         if isinstance(param, str) and param != "all":
             if eval_mode == "ABS":
                 return self._absolute(param)
@@ -109,8 +167,29 @@ class TreeShape:
             return {index : self.evaluate(index, eval_mode) for index in self.index_list(eval_mode)}
         else:
             return {index : self.evaluate(index, eval_mode) for index in self.index_list(param)}
-        
+
     def index_list(self, param = "ABS"):
+    """List index names
+
+    Parameters
+    ----------
+    param : str or int
+        * ``"ABS"`` (default) - Indices for which the absolute index value is defined
+        * ``"REL_TIPS"`` - Indices for which the value normalized with the number of tips is defined
+        * ``"REL_MAX"`` - Indices for which the value normalized with the maximum value is defined
+        * ``"REL_YULE"`` - Indices for which the value normalized with the expected value under the Yule model is defined
+        * k (int) - k indices with minimum pairwise correlation of the absolute values
+    Returns
+    -------
+    list[str]
+        List of index names
+    Raises
+    ------
+    ValueError
+        If ``param`` is a string but not in [``"ABS"``, ``"REL_TIPS"``, ``"REL_MAX"``, ``"REL_YULE"``].
+        If ``param``is an integer but the tree is not binary and rooted (subsets not defined).
+        If ``param`` is an integer but not in [2, 10] (subsets not defined)
+    """
         if isinstance(param, str): # param is eval_mode
             return index_lists.get_list(self.binary, self.rooted, param)
         if not isinstance(param, int):
@@ -120,6 +199,37 @@ class TreeShape:
         return index_lists.get_subset(param)
 
     def evaluate_for_all_roots(self, param, eval_mode = "ABS"):
+    """Evaluate indices for all rooted versions of an unrooted tree.
+    Only possible if ``rooted=False``.
+
+    Parameters
+    ----------
+    param : str or int
+        * ``"all"`` - Evaluate all defined indices
+        * index name (str) - Evaluate the index with the given index name
+        * k (int) - Evaluate k indices with minimum pairwise correlation
+    eval_mode : str
+        * ``"ABS"`` (default) - Absolute index value
+        * ``"REL_TIPS"`` - Index value normalized with the number of tips
+        * ``"REL_MAX"`` - Index value normalized with the maximum value
+        * ``"REL_YULE"`` - Index value normalized with the expected value under the Yule model
+    Returns
+    -------
+        * dict[str, int or float] - if a single index is evaluated. Maps each branch identifier to the index value resulting for the tree rooted in that branch.
+        * dict[str, dict[str, int or float]] - if multiple indices are evaluated. Maps each branch identifier to the index values resulting for the tree rooted in that branch (see ``evaluate``).  
+        The branch identifier of an external branch is the name of the incident leaf.
+        The branch identifiers of the internal branches are integers, assigned in increasing order during tree traversal.
+    Raises
+    ------
+    ValueError
+        If ``rooted=True``.
+        If ``param`` is a string but not ``"all"``and not a proper index name.
+        If ``param``is an integer but the tree is not binary and rooted (subsets not defined).
+        If ``param`` is an integer but not in [2, 10] (subsets not defined)
+        If ``eval_mode`` not in [``"ABS"``, ``"REL_TIPS"``, ``"REL_MAX"``, ``"REL_YULE"``].
+    ArithmeticError
+        If there is an Error during normalization.
+    """
         if self.rooted: 
             raise ValueError("All roots mode only possible for unrooted trees")
         if self._all_rooted_trees is None:
@@ -129,6 +239,29 @@ class TreeShape:
         return {branch_name : ts.evaluate(param, eval_mode) for branch_name, ts in self._ts_instances.items()}
     
     def index_list_for_all_roots(self, param):
+    """List index names for all rooted versions of an unrooted tree.
+    Only possible if ``rooted=False``.
+
+    Parameters
+    ----------
+    param : str or int
+        * ``"ABS"`` (default) - Indices for which the absolute index value is defined
+        * ``"REL_TIPS"`` - Indices for which the value normalized with the number of tips is defined
+        * ``"REL_MAX"`` - Indices for which the value normalized with the maximum value is defined
+        * ``"REL_YULE"`` - Indices for which the value normalized with the expected value under the Yule model is defined
+        * k (int) - k indices with minimum pairwise correlation of the absolute values
+    Returns
+    -------
+    list[str]
+        List of index names
+    Raises
+    ------
+    ValueError
+        If ``rooted=True``.
+        If ``param`` is a string but not in [``"ABS"``, ``"REL_TIPS"``, ``"REL_MAX"``, ``"REL_YULE"``].
+        If ``param``is an integer but the tree is not binary (subsets not defined).
+        If ``param`` is an integer but not in [2, 10] (subsets not defined)
+    """
         if self.rooted:
             raise ValueError("All roots mode only possible for unrooted trees")
         if isinstance(param, str): # param is eval_mode
@@ -140,6 +273,19 @@ class TreeShape:
         return index_lists.get_subset(param)
 
     def get_all_rooted_trees(self):
+     """Get all rooted versions of an unrooted tree.
+    Only possible if ``rooted=False``.
+
+    Returns
+    -------
+    dict[str, Tree] - Maps each branch identifier to the tree rooted in that branch.
+        The branch identifier of an external branch is the name of the incident leaf.
+        The branch identifiers of the internal branches are integers, assigned in increasing order during tree traversal.
+    Raises
+    ------
+    ValueError
+        If ``rooted=True``.
+    """
         if self._all_rooted_trees is None:
             self._all_rooted_trees = self._find_all_rooted_trees(self.tree)
         return self._all_rooted_trees
