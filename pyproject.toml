@@ -20,6 +20,13 @@ dependencies = [
     "importlib-resources"
 ]
 
+[project.optional-dependencies]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["treeshapy*"]
