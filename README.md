@@ -1,10 +1,21 @@
 # treeshapy
 ![logo](https://raw.githubusercontent.com/luisevonderwiese/treeshapy/refs/heads/master/treeshapy_logo.png)
 ## Description
+treeshapy is a Python  library for the evaluation of tree shape indices, based on the `Tree` object of `ete3`. 
+56 topology-based indices are supported, combined with three normalization approaches
+(normalization by number of tips, by maximum value and by expected value under the Yule model).
+treeshapy has a particular focus on unrooted trees. Indices, which do not require a root can be evaluated for unrooted trees as well.
+Additionally, there is a mode which offers the evaluation for all possible positions of the root.
+With our [large-scale evaluation](some-link-to-add), we have determined subsets of indices with minimum pairwise correlation.
+treeshapy offers a direct interface for evaluating such a subset on a given tree.
+
 ## Installation
 ```
 pip install treeshapy
 ```
+## Documentation
+Full documentation can be found [here](https://luisevonderwiese.github.io/treeshapy/)
+
 ## Usage
 Check out `example/example.py` to run the full example. <br><br>
 
