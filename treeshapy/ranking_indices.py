@@ -32,8 +32,8 @@ class FurnasRank(TreeIndex):
             return tree.furnas_rank
 
     def maximum(self, n, m, binary):
-        #if binary:
-        #    return util.we(n)
+        if binary:
+            return util.we(n)
         return float("nan")
 
     def minimum(self, n, m, binary):
